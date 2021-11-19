@@ -86,7 +86,7 @@ class Circle {
 }
 
 function dist(p1, p2){
-    return Math.abs(p1.x - p2.x, p1.y - p2.y);
+    return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 }
 function intrsecLines(line1, line2){
     let dx1 = line1.x2 - line1.x1;
@@ -114,7 +114,7 @@ function intrsecLineAndCircle(line, circle){
     let b = line.x2 - line.x1;
     let c = line.x1 * line.y2 - line.x2 * line.y1;
     let d = Math.abs(a * circle.x + b * circle.y + c);
-    if(d / Math.abs(a, b) > circle.r){
+    if(d / Math.sqrt(a**2 + b**2) > circle.r){
         return;
     }else{
         let X1 = (a*d - b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
@@ -180,11 +180,11 @@ c2 = new Circle(p2, 150);
 l2 = new Line(p3, p4);
 p5 = intrsecLines(l1, l2);
 c3 = new Circle(p5, d);
-/*[p6, p7] = intrsecLineAndCircle(l2, c3);
+[p6, p7] = intrsecLineAndCircle(l2, c3);
 l3 = new Line(p1, p6);
-c4 = new Circle(p5, d);
-[p8, p9] = intrsecLineAndCircle(l2, c4);
-c5 = new Circle(p1, d);
+c4 = new Circle(p5, dist(p1, p6));console.log(p1, p6, dist(p1, p6));
+//[p8, p9] = intrsecLineAndCircle(l2, c4);
+/*c5 = new Circle(p1, d);
 c6 = new Circle(p2, d);
 c7 = new Circle(p8, d);
 [p10, p11] = intrsecCircles(c5, c7);
