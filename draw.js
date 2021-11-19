@@ -15,16 +15,16 @@ class Point {
         sketches.push(this);
     }
     draw(){
-        let X = canvas.width / 2 + this.x;
-        let Y = canvas.height / 2 - this.y;
+        let X = canvas.width / 2 + this.x + moveX;
+        let Y = canvas.height / 2 - this.y + moveY;
 
         ctx.beginPath();
         ctx.arc(X, Y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
     }
     animation(){
-        let X = canvas.width / 2 + this.x;
-        let Y = canvas.height / 2 - this.y;
+        let X = canvas.width / 2 + this.x + moveX;
+        let Y = canvas.height / 2 - this.y + moveY;
 
         ctx.beginPath();
         ctx.arc(X, Y, 2, 0, 2 * Math.PI, false);
@@ -43,10 +43,10 @@ class Line {
         sketches.push(this);
     }
     draw(){
-        let X1 = canvas.width / 2 + this.x1;
-        let Y1 = canvas.height / 2 - this.y1;
-        let X2 = canvas.width / 2 + this.x2;
-        let Y2 = canvas.height / 2 - this.y2;
+        let X1 = canvas.width / 2 + this.x1 + moveX;
+        let Y1 = canvas.height / 2 - this.y1 + moveY;
+        let X2 = canvas.width / 2 + this.x2 + moveX;
+        let Y2 = canvas.height / 2 - this.y2 + moveY;
 
         ctx.beginPath();
         ctx.moveTo(X1, Y1);
@@ -54,10 +54,10 @@ class Line {
         ctx.stroke();
     }
     async animation(){
-        let X1 = canvas.width / 2 + this.x1;
-        let Y1 = canvas.height / 2 - this.y1;
-        let X2 = canvas.width / 2 + this.x2;
-        let Y2 = canvas.height / 2 - this.y2;
+        let X1 = canvas.width / 2 + this.x1 + moveX;
+        let Y1 = canvas.height / 2 - this.y1 + moveY;
+        let X2 = canvas.width / 2 + this.x2 + moveX;
+        let Y2 = canvas.height / 2 - this.y2 + moveY;
 
         const n = 50;
         for(let i = 0; i < n; i++){
@@ -82,16 +82,16 @@ class Circle {
         sketches.push(this);
     }
     draw(){
-        let X = canvas.width / 2 + this.x;
-        let Y = canvas.height / 2 - this.y;
+        let X = canvas.width / 2 + this.x + moveX;
+        let Y = canvas.height / 2 - this.y + moveY;
 
         ctx.beginPath();
         ctx.arc(X, Y, this.r, -this.th2, -this.th1, false);
         ctx.stroke();
     }
     async animation(){
-        let X = canvas.width / 2 + this.x;
-        let Y = canvas.height / 2 - this.y;
+        let X = canvas.width / 2 + this.x + moveX;
+        let Y = canvas.height / 2 - this.y + moveY;
 
         const n = 50;
         for(let i = 0; i < n; i++){
@@ -247,25 +247,45 @@ function intrsecCircles(circle1, circle2){
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+canvas.width = document.documentElement.clientWidth - 10;
+canvas.height = document.documentElement.clientHeight - 10;
 canvasScale = 100;
-var centerX = 0; var centerY = 0;
+let mousePressed = false;
+var mouseBeginX; var mouseBeginY;
+var moveX = 0; var moveY = 0;
 var sketches = [];
+
+// event
+canvas.addEventListener(
+    'mousedown',
+    function(event){
+        mousePressed = true;
+        mouseBeginX = event.clientX;
+        mouseBeginY = event.clientY;
+    }
+);
+
+canvas.addEventListener(
+    'mouseup',
+    function(event){
+        mousePressed = false;
+    }
+);
 
 canvas.addEventListener(
     'mousemove',
     function(event){
-        let rect = canvas.getBoundingClientRect();
-        let mouseX = event.clientX - rect.left;
-        let mouseY = event.clientY - rect.top;
-        mouseX = mouseX - canvas.width / 2;
-        mouseY = canvas.height / 2 - mouseY;
-        for(let i = 0; i < points.length; i++){
-            if(Math.abs(points[i].x - mouseX, points[i].y - mouseY) < 5){
-            }
+        if(mousePressed){
+            moveX += event.clientX - mouseBeginX;
+            moveY += event.clientY - mouseBeginY;
+            mouseBeginX = event.clientX;
+            mouseBeginY = event.clientY;
+            draw();
         }
     },
     false
 );
+
 canvas.addEventListener(
     'wheel',
     function(event){
@@ -309,11 +329,13 @@ l6 = new Line(p2, p15);
 l7 = new Line(p10, p15);
 
 function draw(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for(let i = 0; i < sketches.length; i++){
         sketches[i].draw();
     }
 }
 async function animation(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     for(let i = 0; i < sketches.length; i++){
         await sketches[i].animation();
     }
