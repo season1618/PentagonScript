@@ -1,17 +1,9 @@
-const wait = async (ms) => {
-    return new Promise(
-        (resolve) => {
-            setTimeout(() => {resolve();},
-            ms)
-        }
-    );
-}
+import ctx from "./canvas.js";
 
 class Point {
     constructor(x, y){
         this.x = x;
         this.y = y;
-        sketches.push(this);
     }
     translate(moveX, moveY){
         this.x += moveX;
@@ -40,8 +32,6 @@ class Line {
         this.y1 = p1.y;
         this.x2 = p2.x;
         this.y2 = p2.y;
-
-        sketches.push(this);
     }
     translate(moveX, moveY){
         this.x1 += moveX;
@@ -81,8 +71,6 @@ class Circle {
         this.r = r;
         this.th1 = 10;
         this.th2 = -10;
-
-        sketches.push(this);
     }
     translate(moveX, moveY){
         this.x += moveX;
@@ -114,9 +102,19 @@ class Circle {
     }
 }
 
+const wait = async (ms) => {
+    return new Promise(
+        (resolve) => {
+            setTimeout(() => {resolve();},
+            ms)
+        }
+    );
+}
+
 function dist(p1, p2){
     return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 }
+
 function intrsecLines(line1, line2){
     let dx1 = line1.x2 - line1.x1;
     let dy1 = line1.y2 - line1.y1;
@@ -206,6 +204,7 @@ function intrsecLineAndCircle(line, circle){
         return [new Point(X1, Y1), new Point(X2, Y2)];
     }
 }
+
 function intrsecCircles(circle1, circle2){
     let a = 2 * (circle2.x - circle1.x);
     let b = 2 * (circle2.y - circle1.y);
@@ -250,102 +249,5 @@ function intrsecCircles(circle1, circle2){
     }
 }
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = document.documentElement.clientWidth - 10;
-canvas.height = document.documentElement.clientHeight - 10;
-let canvasScale = 100;
-let mousePressed = false;
-let mousePosX = 0; let mousePosY = 0;
-var sketches = [];
-
-// event
-canvas.addEventListener(
-    'mousedown',
-    function(event){
-        mousePressed = true;
-        mousePosX = event.clientX;
-        mousePosY = event.clientY;
-    }
-);
-
-canvas.addEventListener(
-    'mouseup',
-    function(event){
-        mousePressed = false;
-    }
-);
-
-canvas.addEventListener(
-    'mousemove',
-    function(event){
-        if(mousePressed){
-            for(let i = 0; i < sketches.length; i++){
-                sketches[i].translate(event.clientX - mousePosX, event.clientY - mousePosY);
-            }
-            draw();
-        }
-        mousePosX = event.clientX;
-        mousePosY = event.clientY;
-    },
-    false
-);
-
-canvas.addEventListener(
-    'wheel',
-    function(event){
-        console.log(canvasScale);
-        if(canvasScale < 50 && event.deltaY > 0) return;
-        if(1000 < canvasScale && event.deltaY < 0) return;
-        for(let i = 0; i < sketches.length; i++){
-            sketches[i].scale(mousePosX, mousePosY, (canvasScale - event.deltaY / 10) / canvasScale);
-        }
-        canvasScale -= event.deltaY / 10;
-        draw();
-    }
-);
-document.getElementById('picture').addEventListener(
-    'click',
-    event => event.target.href = canvas.toDataURL()
-);
-
-p1 = new Point(canvas.width/2 - 100, canvas.height/2 - 0); // (-100, 0)
-p2 = new Point(canvas.width/2 + 100, canvas.height/2 - 0); // (100, 0)
-d = dist(p1, p2);
-l1 = new Line(p1, p2);
-c1 = new Circle(p1, 150);
-c2 = new Circle(p2, 150);
-[p3, p4] = intrsecCircles(c1, c2);
-l2 = new Line(p3, p4);
-p5 = intrsecLines(l1, l2);
-c3 = new Circle(p5, d);
-[p6, p7] = intrsecLineAndCircle(l2, c3);
-l3 = new Line(p1, p6);
-c4 = new Circle(p6, dist(p1, p5));
-[p8, p9] = intrsecLineAndCircle(l3, c4);
-c5 = new Circle(p1, dist(p1, p9));
-[p10, p11] = intrsecLineAndCircle(l2, c5);
-c6 = new Circle(p1, d);
-c7 = new Circle(p2, d);
-c8 = new Circle(p10, d);
-[p12, p13] = intrsecCircles(c6, c8);
-[p14, p15] = intrsecCircles(c7, c8);
-l4 = new Line(p1, p12);
-l5 = new Line(p10, p12);
-l6 = new Line(p2, p15);
-l7 = new Line(p10, p15);
-
-function draw(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let i = 0; i < sketches.length; i++){
-        sketches[i].draw();
-    }
-}
-async function animation(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let i = 0; i < sketches.length; i++){
-        await sketches[i].animation();
-    }
-}
-draw();
-//animation();
+export default {Point, Line, Circle};
+export default {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles};
