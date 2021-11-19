@@ -74,8 +74,8 @@ class Circle {
             ctx.beginPath();
             ctx.arc(
                 X, Y, this.r,
-                this.th1 * (n-i)/n + this.th2 * i/n,
-                this.th1 * (n-i-1)/n + this.th2 * (i+1)/n,
+                -(this.th1 * i/n + this.th2 * (n-i)/n),
+                -(this.th1 * (i+1)/n + this.th2 * (n-i-1)/n),
                 false
             );
             ctx.stroke();
@@ -169,7 +169,7 @@ function intrsecLineAndCircle(line, circle){
             circle.th2 = Math.max(circle.th2, beta + 0.1);
         }else{
             circle.th1 = Math.min(circle.th1, beta - 0.1);
-            circle.th2 = Math.max(circle.th2, alpha + Math.PI + 0.1);
+            circle.th2 = Math.max(circle.th2, alpha + 2*Math.PI + 0.1);
         }
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
@@ -191,14 +191,14 @@ function intrsecCircles(circle1, circle2){
         
         // circle1 border
         let alpha1 = Math.atan2(Y1 - circle1.y, X1 - circle1.x);
-        let beta1 = Math.atan2(Y2 - circle1.y, X2 - circle1.x);
+        let beta1 = Math.atan2(Y2 - circle1.y, X2 - circle1.x);console.log(alpha1, beta1);
         if(alpha1 > beta1) [alpha1, beta1] = [beta1, alpha1];
         if(beta1 - alpha1 < Math.PI){
             circle1.th1 = Math.min(circle1.th1, alpha1 - 0.1);
             circle1.th2 = Math.max(circle1.th2, beta1 + 0.1);
         }else{
             circle1.th1 = Math.min(circle1.th1, beta1 - 0.1);
-            circle1.th2 = Math.max(circle1.th2, alpha1 + Math.PI + 0.1);
+            circle1.th2 = Math.max(circle1.th2, alpha1 + 2*Math.PI + 0.1);
         }
         // circle2 border
         let alpha2 = Math.atan2(Y1 - circle2.y, X1 - circle2.x);
@@ -278,7 +278,7 @@ c8 = new Circle(p10, d);
 l4 = new Line(p1, p12);
 l5 = new Line(p10, p12);
 l6 = new Line(p2, p15);
-l7 = new Line(p10, p15);console.log(c6);
+l7 = new Line(p10, p15);console.log(c6, c8);
 
 for(let i = 0; i < sketches.length; i++){
     sketches[i].draw();
