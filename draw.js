@@ -11,23 +11,24 @@ class Point {
     constructor(x, y){
         this.x = x;
         this.y = y;
-
         sketches.push(this);
     }
+    translate(moveX, moveY){
+        this.x += moveX;
+        this.y += moveY;
+    }
+    scale(mousePosX, mousePosY, scaleRate){
+        this.x = scaleRate * (this.x - mousePosX) + mousePosX;
+        this.y = scaleRate * (this.y - mousePosY) + mousePosY;
+    }
     draw(){
-        let X = canvas.width / 2 + this.x + moveX;
-        let Y = canvas.height / 2 - this.y + moveY;
-
         ctx.beginPath();
-        ctx.arc(X, Y, 2, 0, 2 * Math.PI, false);
+        ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
     }
     animation(){
-        let X = canvas.width / 2 + this.x + moveX;
-        let Y = canvas.height / 2 - this.y + moveY;
-
         ctx.beginPath();
-        ctx.arc(X, Y, 2, 0, 2 * Math.PI, false);
+        ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
     }
 }
@@ -42,28 +43,30 @@ class Line {
 
         sketches.push(this);
     }
+    translate(moveX, moveY){
+        this.x1 += moveX;
+        this.y1 += moveY;
+        this.x2 += moveX;
+        this.y2 += moveY;
+    }
+    scale(mousePosX, mousePosY, scaleRate){
+        this.x1 = scaleRate * (this.x1 - mousePosX) + mousePosX;
+        this.y1 = scaleRate * (this.y1 - mousePosY) + mousePosY;
+        this.x2 = scaleRate * (this.x2 - mousePosX) + mousePosX;
+        this.y2 = scaleRate * (this.y2 - mousePosY) + mousePosY;
+    }
     draw(){
-        let X1 = canvas.width / 2 + this.x1 + moveX;
-        let Y1 = canvas.height / 2 - this.y1 + moveY;
-        let X2 = canvas.width / 2 + this.x2 + moveX;
-        let Y2 = canvas.height / 2 - this.y2 + moveY;
-
         ctx.beginPath();
-        ctx.moveTo(X1, Y1);
-        ctx.lineTo(X2, Y2);
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(this.x2, this.y2);
         ctx.stroke();
     }
     async animation(){
-        let X1 = canvas.width / 2 + this.x1 + moveX;
-        let Y1 = canvas.height / 2 - this.y1 + moveY;
-        let X2 = canvas.width / 2 + this.x2 + moveX;
-        let Y2 = canvas.height / 2 - this.y2 + moveY;
-
         const n = 50;
         for(let i = 0; i < n; i++){
             ctx.beginPath();
-            ctx.moveTo(X1 * (n-i)/n + X2 * i/n, Y1 * (n-i)/n + Y2 * i/n);
-            ctx.lineTo(X1 * (n-i-1)/n + X2 * (i+1)/n, Y1 * (n-i-1)/n + Y2 * (i+1)/n);
+            ctx.moveTo(this.x1 * (n-i)/n + this.x2 * i/n, this.y1 * (n-i)/n + this.y2 * i/n);
+            ctx.lineTo(this.x1 * (n-i-1)/n + this.x2 * (i+1)/n, this.y1 * (n-i-1)/n + this.y2 * (i+1)/n);
             ctx.stroke();
             await wait(10);
         }
@@ -81,23 +84,26 @@ class Circle {
 
         sketches.push(this);
     }
+    translate(moveX, moveY){
+        this.x += moveX;
+        this.y += moveY;
+    }
+    scale(mousePosX, mousePosY, scaleRate){
+        this.x = scaleRate * (this.x - mousePosX) + mousePosX;
+        this.y = scaleRate* (this.y - mousePosY) + mousePosY;
+        this.r = scaleRate * this.r;
+    }
     draw(){
-        let X = canvas.width / 2 + this.x + moveX;
-        let Y = canvas.height / 2 - this.y + moveY;
-
         ctx.beginPath();
-        ctx.arc(X, Y, this.r, -this.th2, -this.th1, false);
+        ctx.arc(this.x, this.y, this.r, -this.th2, -this.th1, false);
         ctx.stroke();
     }
     async animation(){
-        let X = canvas.width / 2 + this.x + moveX;
-        let Y = canvas.height / 2 - this.y + moveY;
-
         const n = 50;
         for(let i = 0; i < n; i++){
             ctx.beginPath();
             ctx.arc(
-                X, Y, this.r,
+                this.x, this.y, this.r,
                 -(this.th1 * i/n + this.th2 * (n-i)/n),
                 -(this.th1 * (i+1)/n + this.th2 * (n-i-1)/n),
                 false
@@ -125,8 +131,7 @@ function intrsecLines(line1, line2){
         let t = ((line1.x2 - line2.x2) * dy1 + dx1 * (line1.y2 - line2.y2)) / D;
         let X = s * line1.x1 + (1 - s) * line1.x2;
         let Y = s * line1.y1 + (1 - s) * line1.y2;
-        //let X = (line1.x1 * dy1 * dx2 - line2.x1 * dx1 * dy2 + dx1 * dx2 * (line2.y1 - line1.y1)) / D;
-        //let Y = (line2.y1 * dy1 * dx2 - line1.y1 * dx1 * dy2 - dy1 * dy2 * (line2.x1 - line1.x1)) / D;
+
         if(s < 0){
             s -= 0.1;
             line1.x2 = s * line1.x1 + (1 - s) * line1.x2;
@@ -249,10 +254,9 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = document.documentElement.clientWidth - 10;
 canvas.height = document.documentElement.clientHeight - 10;
-canvasScale = 100;
+let canvasScale = 100;
 let mousePressed = false;
-var mouseBeginX; var mouseBeginY;
-var moveX = 0; var moveY = 0;
+let mousePosX = 0; let mousePosY = 0;
 var sketches = [];
 
 // event
@@ -260,8 +264,8 @@ canvas.addEventListener(
     'mousedown',
     function(event){
         mousePressed = true;
-        mouseBeginX = event.clientX;
-        mouseBeginY = event.clientY;
+        mousePosX = event.clientX;
+        mousePosY = event.clientY;
     }
 );
 
@@ -276,12 +280,13 @@ canvas.addEventListener(
     'mousemove',
     function(event){
         if(mousePressed){
-            moveX += event.clientX - mouseBeginX;
-            moveY += event.clientY - mouseBeginY;
-            mouseBeginX = event.clientX;
-            mouseBeginY = event.clientY;
+            for(let i = 0; i < sketches.length; i++){
+                sketches[i].translate(event.clientX - mousePosX, event.clientY - mousePosY);
+            }
             draw();
         }
+        mousePosX = event.clientX;
+        mousePosY = event.clientY;
     },
     false
 );
@@ -289,12 +294,14 @@ canvas.addEventListener(
 canvas.addEventListener(
     'wheel',
     function(event){
-        canvasScale += event.deltaY / 100;
-        ctx.save();
-        ctx.scale(canvasScale / 100, canvasScale / 100);
-        ctx.restore();
-        //canvas.width = 8 * canvasScale;
-        //canvas.height = 8 * canvasScale;
+        console.log(canvasScale);
+        if(canvasScale < 50 && event.deltaY > 0) return;
+        if(1000 < canvasScale && event.deltaY < 0) return;
+        for(let i = 0; i < sketches.length; i++){
+            sketches[i].scale(mousePosX, mousePosY, (canvasScale - event.deltaY / 10) / canvasScale);
+        }
+        canvasScale -= event.deltaY / 10;
+        draw();
     }
 );
 document.getElementById('picture').addEventListener(
@@ -302,8 +309,8 @@ document.getElementById('picture').addEventListener(
     event => event.target.href = canvas.toDataURL()
 );
 
-p1 = new Point(-100, 0);
-p2 = new Point(100, 0);
+p1 = new Point(canvas.width/2 - 100, canvas.height/2 - 0); // (-100, 0)
+p2 = new Point(canvas.width/2 + 100, canvas.height/2 - 0); // (100, 0)
 d = dist(p1, p2);
 l1 = new Line(p1, p2);
 c1 = new Circle(p1, 150);
