@@ -1,5 +1,3 @@
-import ctx from "./canvas.js";
-
 class Point {
     constructor(x, y){
         this.x = x;
@@ -13,12 +11,12 @@ class Point {
         this.x = scaleRate * (this.x - mousePosX) + mousePosX;
         this.y = scaleRate * (this.y - mousePosY) + mousePosY;
     }
-    draw(){
+    draw(ctx){
         ctx.beginPath();
         ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
     }
-    animation(){
+    animation(ctx){
         ctx.beginPath();
         ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
@@ -45,13 +43,13 @@ class Line {
         this.x2 = scaleRate * (this.x2 - mousePosX) + mousePosX;
         this.y2 = scaleRate * (this.y2 - mousePosY) + mousePosY;
     }
-    draw(){
+    draw(ctx){
         ctx.beginPath();
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
         ctx.stroke();
     }
-    async animation(){
+    async animation(ctx){
         const n = 50;
         for(let i = 0; i < n; i++){
             ctx.beginPath();
@@ -81,12 +79,12 @@ class Circle {
         this.y = scaleRate* (this.y - mousePosY) + mousePosY;
         this.r = scaleRate * this.r;
     }
-    draw(){
+    draw(ctx){
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.r, -this.th2, -this.th1, false);
         ctx.stroke();
     }
-    async animation(){
+    async animation(ctx){
         const n = 50;
         for(let i = 0; i < n; i++){
             ctx.beginPath();
@@ -249,5 +247,5 @@ function intrsecCircles(circle1, circle2){
     }
 }
 
-export default {Point, Line, Circle};
-export default {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles};
+export {Point, Line, Circle};
+export {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles};
