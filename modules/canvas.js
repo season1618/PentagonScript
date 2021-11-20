@@ -79,4 +79,4 @@ document.getElementById('picture').addEventListener(
     event => event.target.href = canvas.toDataURL()
 );
 
-export {ctx, sketches};
+export {canvas, ctx, sketches};
