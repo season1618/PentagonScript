@@ -4,6 +4,7 @@ class Point {
         this.y = y;
     }
     translate(moveX, moveY){
+        this.type = 'Point';
         this.x += moveX;
         this.y += moveY;
     }
@@ -26,6 +27,7 @@ class Point {
 class Line {
     // 1st postulate
     constructor(p1, p2){
+        this.type = 'Line';
         this.x1 = p1.x;
         this.y1 = p1.y;
         this.x2 = p2.x;
@@ -64,6 +66,7 @@ class Line {
 class Circle {
     // 3rd postulate
     constructor(p, r){
+        this.type = 'Circle';
         this.x = p.x;
         this.y = p.y;
         this.r = r;
