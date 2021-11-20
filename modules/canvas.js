@@ -65,7 +65,6 @@ canvas.addEventListener(
 canvas.addEventListener(
     'wheel',
     function(event){
-        console.log(canvasScale);
         if(canvasScale < 50 && event.deltaY > 0) return;
         if(1000 < canvasScale && event.deltaY < 0) return;
         scale(mousePosX, mousePosY, (canvasScale - event.deltaY / 10) / canvasScale);
