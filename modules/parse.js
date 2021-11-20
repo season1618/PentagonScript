@@ -4,9 +4,9 @@ function parse(str){
     i = 0;
     codeData = [];
     while(i < str.length){
-        let [lv1Name, lv2Name] = readLeftValue();
-        let op = readOperator();
-        let [rv1Name, rv2Name] = readRightValue();
+        let [lv1Name, lv2Name] = readLeftValue(str);
+        let op = readOperator(str);
+        let [rv1Name, rv2Name] = readRightValue(str);
 
         codeData.push({
             lv1Name: lv1Name,
@@ -18,25 +18,26 @@ function parse(str){
     }
 }
 
-function readLeftValue(){
+function readLeftValue(str){
     lv1Name = ''; lv2Name = '';
-    while(str[i] == ' ') i++;
+    while(str[i] == ' ' || str[i] == '\n') i++;
     if(str[i] == '['){
+        i++;
         while(true){
             if(str[i] == ',') break;
-            if(str[i] != ' ') lv1Name += str[i];
+            if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
             i++;
         }
         i++;
         while(true){
             if(str[i] == '=') break;
-            if(str[i] != ' ' && str[i] == ']') lv2Name += str[i];
+            if(str[i] != ' ' && str[i] != '\n' && str[i] != ']') lv2Name += str[i];
             i++;
         }
     }else{
         while(true){
             if(str[i] == '=') break;
-            if(str[i] != ' ') lv1Name += str[i];
+            if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
             i++;
         }
     }
@@ -44,26 +45,27 @@ function readLeftValue(){
     return [lv1Name, lv2Name];
 }
 
-function readOperator(){
+function readOperator(str){
+    while(str[i] == ' ' || str[i] == '\n') i++;
     i++;
     return str[i-1];
 }
 
-function readRightValue(){
+function readRightValue(str){
     rv1Name = ''; rv2Name = '';
     while(true){
         if(str[i] == ',') break;
-        if(str[i] != ' ') rv1Name += str[i];
+        if(str[i] != ' ' && str[i] != '\n') rv1Name += str[i];
         i++;
     }
     i++;
     while(true){
-        if(str[i] == ')' || str[i] == '}') break;
-        if(str[i] != ' ') rv2Name += str[i];
+        if(str[i] == ';') break;
+        if(str[i] != ' ' && str[i] != '\n' && str[i] != ')' && str[i] != '}') rv2Name += str[i];
         i++;
     }
     i++;
     return [rv1Name, rv2Name];
 }
 
-export {codes, parse};
+export {codeData, parse};
