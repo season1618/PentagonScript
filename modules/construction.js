@@ -1,10 +1,10 @@
 class Point {
     constructor(x, y){
+        this.type = 'Point';
         this.x = x;
         this.y = y;
     }
     translate(moveX, moveY){
-        this.type = 'Point';
         this.x += moveX;
         this.y += moveY;
     }
@@ -32,6 +32,28 @@ class Line {
         this.y1 = p1.y;
         this.x2 = p2.x;
         this.y2 = p2.y;
+    }
+    update(X, Y){
+        let x3 = 2 * this.x1 - this.x2;
+        let y3 = 2 * this.y1 - this.y2;
+
+        let d = Math.sqrt((this.x2 - this.x1)**2 + (this.y2 - this.y1)**2);
+        let d1 = Math.sqrt((X - this.x1)**2 + (Y - this.y1)**2);
+        let d2 = Math.sqrt((X - this.x2)**2 + (Y - this.y2)**2);
+        let d3 = Math.sqrt((X - x3)**2 + (Y - y3)**2);
+        let t;
+        if(d3 <= d2) t = - d1 / d;
+        else t = d1 / d;
+
+        if(t < 0){
+            t -= 0.1;
+            this.x1 = (1 - t) * this.x1 + t * this.x2;
+            this.y1 = (1 - t) * this.y1 + t * this.y2;
+        }else if(1 < t){
+            t += 0.1;
+            this.x2 = (1 - t) * this.x1 + t * this.x2;
+            this.y2 = (1 - t) * this.y1 + t * this.y2;
+        }
     }
     translate(moveX, moveY){
         this.x1 += moveX;
@@ -131,24 +153,8 @@ function intrsecLines(line1, line2){
         let X = s * line1.x1 + (1 - s) * line1.x2;
         let Y = s * line1.y1 + (1 - s) * line1.y2;
 
-        if(s < 0){
-            s -= 0.1;
-            line1.x2 = s * line1.x1 + (1 - s) * line1.x2;
-            line1.y2 = s * line1.y1 + (1 - s) * line1.y2;
-        }else if(1 < s){
-            s += 0.1
-            line1.x1 = s * line1.x1 + (1 - s) * line1.x2;
-            line1.y1 = s * line1.y1 + (1 - s) * line1.y2;
-        }
-        if(t < 0){
-            t -= 0.1;
-            line2.x2 = t * line2.x1 + (1 - t) * line2.x2;
-            line2.y2 = t * line2.y1 + (1 - t) * line2.y2;
-        }else if(1 < t){
-            t += 0.1;
-            line2.x1 = t * line2.x1 + (1 - t) * line2.x2;
-            line2.y1 = t * line2.y1 + (1 - t) * line2.y2;
-        }
+        line1.update(X, Y);
+        line2.update(X, Y);
         return new Point(X, Y);
     }
 }
@@ -167,27 +173,8 @@ function intrsecLineAndCircle(line, circle){
         let X2 = (a*d + b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
         let Y2 = (b*d - a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
         
-        // line border
-        let s = (line.x1 != line.x2 ? (X1 - line.x1) / (line.x2 - line.x1) : (Y1 - line.y1) / (line.y2 - line.y1));
-        if(s < 0){
-            s -= 0.1;
-            line.x1 = (1 - s) * line.x1 + s * line.x2;
-            line.y1 = (1 - s) * line.y1 + s * line.y2;
-        }else if(1 < s){
-            s += 0.1;
-            line.x2 = (1 - s) * line.x1 + s * line.x2;
-            line.y2 = (1 - s) * line.y1 + s * line.y2;
-        }
-        let t = (line.x1 != line.x2 ? (X2 - line.x1) / (line.x2 - line.x1) : (Y2 - line.y1) / (line.y2 - line.y1));
-        if(t < 0){
-            t -= 0.1;
-            line.x1 = (1 - t) * line.x1 + t * line.x2;
-            line.y1 = (1 - t) * line.y1 + t * line.y2;
-        }else if(1 < t){
-            t += 0.1;
-            line.x2 = (1 - t) * line.x1 + t * line.x2;
-            line.y2 = (1 - t) * line.y1 + t * line.y2;
-        }
+        line.update(X1, Y1);
+        line.update(X2, Y2);
 
         // circle border
         let alpha = Math.atan2(Y1 - circle.y, X1 - circle.x);

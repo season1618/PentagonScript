@@ -43,15 +43,15 @@ sketches.push(c7);sketches.push(c8);sketches.push(p12);sketches.push(p13);sketch
 sketches.push(p15);sketches.push(l4);sketches.push(l5);sketches.push(l6);sketches.push(l7);*/
 
 let varName = {};
-for(let i = 0; i < codes.length; i++){
-    let lv1Name = codes[i].lv1Name;
-    let lv2Name = codes[i].lv2Name;
-    let op = codes[i].op;
-    let rv1Name = codes[i].rv1Name;
-    let rv2Name = codes[i].rv2Name;
+for(let i = 0; i < codeData.length; i++){
+    let lv1Name = codeData[i].lv1Name;
+    let lv2Name = codeData[i].lv2Name;
+    let op = codeData[i].op;
+    let rv1Name = codeData[i].rv1Name;
+    let rv2Name = codeData[i].rv2Name;
 
     let rv1Type, rv2Type;
-    if(Number(rv1Name) != NaN){
+    if(!isNaN(Number(rv1Name))){
         varName[rv1Name] = Number(rv1Name);
         rv1Type = 'number';
     }
@@ -60,19 +60,19 @@ for(let i = 0; i < codes.length; i++){
         else rv1Type = varName[rv1Name].type;
     }
     else{
-        console.log(rv1Name + ' is undefined.');
+        console.log('sentence ' + i + 1 + ' : ' + rv1Name + ' is undefined.');
         break;
     }
-    if(Number(rv2Name) != NaN){
+    if(!isNaN(Number(rv2Name))){
         varName[rv2Name] = Number(rv2Name);
         rv2Type = 'number';
     }
-    else if(rv1Name in varName){
+    else if(rv2Name in varName){
         if(typeof(varName[rv2Name]) == 'number') rv2Type = 'number';
         else rv2Type = varName[rv2Name].type;
     }
     else{
-        console.log(rv2Name + ' is undefined.');
+        console.log('sentence ' + i + 1 + ' : ' + rv2Name + ' is undefined.');
         break;
     }
 
@@ -99,7 +99,7 @@ for(let i = 0; i < codes.length; i++){
             varName[lv1Name] = c;
         }
         else{
-            console.log('Combinaition of types is invalid.');
+            console.log('sentence ' + i + 1 + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
             break;
         }
     }
@@ -136,7 +136,7 @@ for(let i = 0; i < codes.length; i++){
             varName[lv2Name] = p2;
         }
         else{
-            console.log('Combinaition of types is invalid.');
+            console.log('sentence ' + i + 1 + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
             break;
         }
     }
