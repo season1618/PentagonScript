@@ -1,4 +1,4 @@
-import {ctx, sketches} from './modules/canvas.js';
+import {canvas, ctx, sketches} from './modules/canvas.js';
 import {Point, Line, Circle} from './modules/construction.js';
 import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles} from './modules/construction.js';
 
