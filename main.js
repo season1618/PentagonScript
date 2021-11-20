@@ -2,7 +2,7 @@ import {canvas, ctx, sketches} from './modules/canvas.js';
 import {Point, Line, Circle} from './modules/construction.js';
 import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles} from './modules/construction.js';
 
-b = 0;
+let b = 0;
 p1 = new Point(canvas.width/2 - 100, canvas.height/2 - 0); // (-100, 0)
 p2 = new Point(canvas.width/2 + 100, canvas.height/2 - 0); // (100, 0)
 d = dist(p1, p2);
