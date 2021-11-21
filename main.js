@@ -49,7 +49,7 @@ function registerSketch(){
             else rv1Type = varName[rv1Name].type;
         }
         else{
-            console.log('sentence ' + i + 1 + ' : ' + rv1Name + ' is undefined.');
+            console.log('sentence ' + (i + 1) + ' : ' + rv1Name + ' is undefined.');
             break;
         }
         if(!isNaN(Number(rv2Name))){
@@ -61,7 +61,7 @@ function registerSketch(){
             else rv2Type = varName[rv2Name].type;
         }
         else{
-            console.log('sentence ' + i + 1 + ' : ' + rv2Name + ' is undefined.');
+            console.log('sentence ' + (i + 1) + ' : ' + rv2Name + ' is undefined.');
             break;
         }
 
@@ -88,7 +88,7 @@ function registerSketch(){
                 varName[lv1Name] = c;
             }
             else{
-                console.log('sentence ' + i + 1 + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
+                console.log('sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
                 break;
             }
         }
@@ -135,7 +135,7 @@ function registerSketch(){
                 varName[lv2Name] = p2;
             }
             else{
-                console.log('sentence ' + i + 1 + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
+                console.log('sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
                 break;
             }
         }
