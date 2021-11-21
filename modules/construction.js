@@ -106,7 +106,7 @@ class Circle {
     }
     draw(ctx){
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, -this.th2, -this.th1, false);
+        ctx.arc(this.x, this.y, this.r, this.th1, this.th2, false);
         ctx.stroke();
     }
     async animation(ctx){
@@ -115,8 +115,8 @@ class Circle {
             ctx.beginPath();
             ctx.arc(
                 this.x, this.y, this.r,
-                -(this.th1 * i/n + this.th2 * (n-i)/n),
-                -(this.th1 * (i+1)/n + this.th2 * (n-i-1)/n),
+                this.th1 * (n-i)/n + this.th2 * i/n,
+                this.th1 * (n-i-1)/n + this.th2 * (i+1)/n,
                 false
             );
             ctx.stroke();
