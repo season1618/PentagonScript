@@ -152,10 +152,9 @@ function intrsecLines(line1, line2){
     if(D == 0){
         return;
     }else{
-        let s = ((line2.x2 - line1.x2) * dy2 + dx2 * (line2.y2 - line1.y2)) / D;
-        let t = ((line1.x2 - line2.x2) * dy1 + dx1 * (line1.y2 - line2.y2)) / D;
-        let X = s * line1.x1 + (1 - s) * line1.x2;
-        let Y = s * line1.y1 + (1 - s) * line1.y2;
+        let s = (dx2 * (line2.y1 - line1.y1) - dy2 * (line2.x1 - line1.x1)) / D;
+        let X = (1 - s) * line1.x1 + s * line1.x2;
+        let Y = (1 - s) * line1.y1 + s * line1.y2;
 
         line1.update(X, Y);
         line2.update(X, Y);
