@@ -9,7 +9,7 @@ body {
     overflow: hidden;
 }
 
-body > div #download {
+#download {
     position: absolute;
     left: 20px;
     bottom: 10%;
