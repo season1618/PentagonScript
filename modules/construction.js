@@ -55,6 +55,10 @@ class Line {
             this.y2 = (1 - t) * this.y1 + t * this.y2;
         }
     }
+    swap(){
+        [this.x1, this.x2] = [this.x2, this.x1];
+        [this.y1, this.y2] = [this.y2, this.y1];
+    }
     translate(moveX, moveY){
         this.x1 += moveX;
         this.y1 += moveY;
@@ -180,7 +184,7 @@ function intrsecLineAndCircle(line, circle){
         let alpha = Math.atan2(Y1 - circle.y, X1 - circle.x);
         let beta = Math.atan2(Y2 - circle.y, X2 - circle.x);
 
-        if(alpha > beta) [alpha, beta] = [beta, alpha];
+        if(alpha > beta) beta += 2 * Math.PI;
         if(beta - alpha < Math.PI){
             circle.th1 = Math.min(circle.th1, alpha - 0.1);
             circle.th2 = Math.max(circle.th2, beta + 0.1);

@@ -115,6 +115,16 @@ function registerSketch(){
                 varName[lv1Name] = p1;
                 varName[lv2Name] = p2;
             }
+            else if(rv1Type == 'Circle' && rv2Type == 'Line'){
+                let c = varName[rv1Name];
+                let l = varName[rv2Name];
+                l.swap();
+                let [p1, p2] = intrsecLineAndCircle(l, c);console.log(l);
+                sketches.push(p1);
+                sketches.push(p2);
+                varName[lv1Name] = p1;
+                varName[lv2Name] = p2;
+            }
             else if(rv1Type == 'Circle' && rv2Type == 'Circle'){
                 let c1 = varName[rv1Name];
                 let c2 = varName[rv2Name];
