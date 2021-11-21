@@ -13,6 +13,7 @@ drawButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
+        console.log(codeString);
         parse(codeString);
         registerSketch();
         draw(ctx);
@@ -30,6 +31,7 @@ playButton.addEventListener(
 )
 
 function registerSketch(){
+    sketches = [];
     let varName = {};
     for(let i = 0; i < codeData.length; i++){
         let lv1Name = codeData[i].lv1Name;
