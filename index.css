@@ -25,6 +25,7 @@ body > div #download {
     width: 30%;
 }
 textarea {
+    height: 80%;
     top: 0;
     bottom: 20%;
     left: 0;
