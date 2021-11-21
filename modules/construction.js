@@ -182,14 +182,18 @@ function intrsecLineAndCircle(line, circle){
         // circle border
         let alpha = Math.atan2(Y1 - circle.y, X1 - circle.x);
         let beta = Math.atan2(Y2 - circle.y, X2 - circle.x);
-
-        if(alpha > beta) beta += 2 * Math.PI;
+        if(alpha > beta){
+            if(beta <= 0) beta += 2 * Math.PI;
+            else alpha -= 2 * Math.PI;
+        }
         if(beta - alpha < Math.PI){
             circle.th1 = Math.min(circle.th1, alpha - 0.1);
             circle.th2 = Math.max(circle.th2, beta + 0.1);
         }else{
+            if(alpha <= 0) alpha += 2 * Math.PI;
+            else beta -= 2 * Math.PI;
             circle.th1 = Math.min(circle.th1, beta - 0.1);
-            circle.th2 = Math.max(circle.th2, alpha + 2*Math.PI + 0.1);
+            circle.th2 = Math.max(circle.th2, alpha + 0.1);
         }
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
