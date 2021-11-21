@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = document.documentElement.clientWidth - 10;
 canvas.height = document.documentElement.clientHeight - 10;
 
-var sketches = [];
+let sketches = [];
 
 function translate(moveX, moveY){
     for(let i = 0; i < sketches.length; i++){
