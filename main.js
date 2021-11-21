@@ -11,7 +11,7 @@ drawButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
-        codeData = parse(codeString);
+        let codeData = parse(codeString);
         registerSketch(codeData);
         draw(ctx);
     }
@@ -21,7 +21,7 @@ playButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
-        codeData = parse(codeString);
+        let codeData = parse(codeString);
         registerSketch(codeData);
         animation(ctx);
     }
