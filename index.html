@@ -7,10 +7,18 @@
 </head>
 <body>
     <canvas id="canvas" width="800" height="800"></canvas>
-    <div>
+    <div id="download">
         <div><a id="picture" href="" download="canvas.png">picture</a></div>
         <div><a id="video" href="" download="canvas.mp4">video</a></div>
     </div>
+    <div id="editorpane">
+        <testarea id="editor"></testarea>
+        <div id="run">
+            <button id="draw">draw</button>
+            <button id="play">play</button>
+        </div>
+    </div>
+    
     <script type="module" src="./main.js"></script>
 </body>
 </html>

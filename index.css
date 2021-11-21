@@ -9,8 +9,24 @@ body {
     overflow: hidden;
 }
 
-body > div {
+body > div #download {
     position: absolute;
     left: 20px;
     bottom: 10%;
+}
+
+
+#editorpane {
+    padding: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+}
+textarea {
+    top: 0;
+    bottom: 20%;
+    left: 0;
+    right: 0;
 }
