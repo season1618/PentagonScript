@@ -31,7 +31,7 @@ playButton.addEventListener(
 )
 
 function registerSketch(codeData){
-    sketches = [];
+    if(sketches != 0) sketches = [];
     let varName = {};
     for(let i = 0; i < codeData.length; i++){
         let lv1Name = codeData[i].lv1Name;
