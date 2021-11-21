@@ -23,19 +23,19 @@ function readLeftValue(str){
     while(str[i] == ' ' || str[i] == '\n') i++;
     if(str[i] == '['){
         i++;
-        while(true){
+        while(i < str.length){
             if(str[i] == ',') break;
             if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
             i++;
         }
         i++;
-        while(true){
+        while(i < str.length){
             if(str[i] == '=') break;
             if(str[i] != ' ' && str[i] != '\n' && str[i] != ']') lv2Name += str[i];
             i++;
         }
     }else{
-        while(true){
+        while(i < str.length){
             if(str[i] == '=') break;
             if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
             i++;
@@ -53,13 +53,13 @@ function readOperator(str){
 
 function readRightValue(str){
     let rv1Name = '', rv2Name = '';
-    while(true){
+    while(i < str.length){
         if(str[i] == ',') break;
         if(str[i] != ' ' && str[i] != '\n') rv1Name += str[i];
         i++;
     }
     i++;
-    while(true){
+    while(i < str.length){
         if(str[i] == ';') break;
         if(str[i] != ' ' && str[i] != '\n' && str[i] != ')' && str[i] != '}') rv2Name += str[i];
         i++;
