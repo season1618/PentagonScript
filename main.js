@@ -13,7 +13,6 @@ drawButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
-        console.log(codeString);
         parse(codeString);
         registerSketch();
         draw(ctx);
