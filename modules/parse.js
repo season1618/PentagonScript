@@ -19,7 +19,7 @@ function parse(str){
 }
 
 function readLeftValue(str){
-    lv1Name = ''; lv2Name = '';
+    let lv1Name = '', lv2Name = '';
     while(str[i] == ' ' || str[i] == '\n') i++;
     if(str[i] == '['){
         i++;
@@ -52,7 +52,7 @@ function readOperator(str){
 }
 
 function readRightValue(str){
-    rv1Name = ''; rv2Name = '';
+    let rv1Name = '', rv2Name = '';
     while(true){
         if(str[i] == ',') break;
         if(str[i] != ' ' && str[i] != '\n') rv1Name += str[i];
