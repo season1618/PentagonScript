@@ -30,7 +30,7 @@ playButton.addEventListener(
 )
 
 function registerSketch(){
-    //sketches = [];
+    sketches = [];
     let varName = {};
     for(let i = 0; i < codeData.length; i++){
         let lv1Name = codeData[i].lv1Name;
@@ -69,21 +69,21 @@ function registerSketch(){
             if(rv1Type == 'number' && rv2Type == 'number'){
                 let x = canvas.width / 2 + Number(rv1Name);
                 let y = canvas.height / 2 - Number(rv2Name);
-                p = new Point(x, y);
+                let p = new Point(x, y);
                 sketches.push(p);
                 varName[lv1Name] = p;
             }
             else if(rv1Type == 'Point' && rv2Type == 'Point'){
                 let p1 = varName[rv1Name];
                 let p2 = varName[rv2Name];
-                l = new Line(p1, p2);
+                let l = new Line(p1, p2);
                 sketches.push(l);
                 varName[lv1Name] = l;
             }
             else if(rv1Type == 'Point' && rv2Type == 'number'){
                 let p = varName[rv1Name];
                 let r = varName[rv2Name];
-                c = new Circle(p, r);
+                let c = new Circle(p, r);
                 sketches.push(c);
                 varName[lv1Name] = c;
             }
