@@ -7,12 +7,18 @@ let editor = document.getElementById('editor');
 let drawButton = document.getElementById('draw');
 let playButton = document.getElementById('play');
 
-drawButton.addEventListener(
-    'click',
+editor.addEventListener(
+    'change',
     function(){
         let codeString = editor.value;
         let codeData = parse(codeString);
         registerSketch(codeData);
+    }
+)
+
+drawButton.addEventListener(
+    'click',
+    function(){
         draw(ctx);
     }
 );
@@ -20,9 +26,6 @@ drawButton.addEventListener(
 playButton.addEventListener(
     'click',
     function(){
-        let codeString = editor.value;
-        let codeData = parse(codeString);
-        registerSketch(codeData);
         animation(ctx);
     }
 )
