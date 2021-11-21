@@ -1,8 +1,7 @@
-let codeData = [];
 let i;
 function parse(str){
     i = 0;
-    codeData = [];
+    let codeData = [];
     while(i < str.length){
         let [lv1Name, lv2Name] = readLeftValue(str);
         let op = readOperator(str);
@@ -16,6 +15,7 @@ function parse(str){
             rv2Name: rv2Name
         });
     }
+    return codeData;
 }
 
 function readLeftValue(str){
@@ -68,4 +68,4 @@ function readRightValue(str){
     return [rv1Name, rv2Name];
 }
 
-export {codeData, parse};
+export {parse};

@@ -1,9 +1,7 @@
 import {canvas, ctx, sketches} from './modules/canvas.js';
 import {Point, Line, Circle} from './modules/construction.js';
 import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles} from './modules/construction.js';
-import {codeData, parse} from './modules/parse.js';
-
-/*let codeString = 'p1 = (-100, 0);\np2 = (100, 0);\nd1 = {p1, p2};\nl1 = (p1, p2);\nc1 = (p1, 150);\nc2 = (p2, 150);\n[p3, p4] = {c1, c2};\nl2 = (p3, p4);\np5 = {l1, l2};\nc3 = (p5, d1);\n[p6, p7] = {l2, c3};\nl3 = (p1, p7);\nd2 = {p1, p5};\nc4 = (p7, d2);\n[p8, p9] = {l3, c4};\nd3 = {p1, p9};\nc5 = (p1, d3);\n[p10, p11] = {l2, c5};\nc6 = (p1, d1);\nc7 = (p2, d1);\nc8 = (p11, d1);\n[p12, p13] = {c6, c8};\n[p14, p15] = {c7, c8};\nl4 = (p1, p13);\nl5 = (p11, p13);\nl6 = (p2, p14);\nl7 = (p11, p14);';*/
+import {parse} from './modules/parse.js';
 
 let editor = document.getElementById('editor');
 let drawButton = document.getElementById('draw');
@@ -13,8 +11,8 @@ drawButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
-        parse(codeString);
-        registerSketch();
+        codeData = parse(codeString);
+        registerSketch(codeData);
         draw(ctx);
     }
 );
@@ -23,13 +21,13 @@ playButton.addEventListener(
     'click',
     function(){
         let codeString = editor.value;
-        parse(codeString);
-        registerSketch();
+        codeData = parse(codeString);
+        registerSketch(codeData);
         animation(ctx);
     }
 )
 
-function registerSketch(){
+function registerSketch(codeData){
     sketches = [];
     let varName = {};
     for(let i = 0; i < codeData.length; i++){
