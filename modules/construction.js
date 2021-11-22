@@ -99,6 +99,32 @@ class Circle {
         this.th1 = 10;
         this.th2 = -10;
     }
+    update(X, Y){
+        let th = Math.atan2(Y - this.y, X - this.x);
+        if(this.th1 == 10){
+            this.th1 = th - 0.1;
+            this.th2 = th + 0.1;
+            return;
+        }
+
+        let alpha, beta;
+        if(th <= 0){
+            alpha = th;
+            beta = th + 2 * Math.PI;
+        }else{
+            alpha = th - 2 * Math.PI;
+            beta = th;
+        }
+
+        if(this.th1 <= alpha && alpha <= this.th2);
+        else if(this.th1 <= beta && beta <= this.th2);
+        else if(this.th2 < alpha) this.th2 = alpha + 0.1;
+        else if(beta < this.th1) this.th1 = beta - 0.1;
+        else{
+            if(this.th1 - alpha < beta - this.th2) this.th1 = alpha - 0.1;
+            else this.th2 = beta + 0.1;
+        }
+    }
     translate(moveX, moveY){
         this.x += moveX;
         this.y += moveY;
@@ -179,22 +205,8 @@ function intrsecLineAndCircle(line, circle){
         line.update(X1, Y1);
         line.update(X2, Y2);
 
-        // circle border
-        let alpha = Math.atan2(Y1 - circle.y, X1 - circle.x);
-        let beta = Math.atan2(Y2 - circle.y, X2 - circle.x);
-        if(alpha > beta){
-            if(beta <= 0) beta += 2 * Math.PI;
-            else alpha -= 2 * Math.PI;
-        }
-        if(beta - alpha < Math.PI){
-            circle.th1 = Math.min(circle.th1, alpha - 0.1);
-            circle.th2 = Math.max(circle.th2, beta + 0.1);
-        }else{
-            if(alpha <= 0) alpha += 2 * Math.PI;
-            else beta -= 2 * Math.PI;
-            circle.th1 = Math.min(circle.th1, beta - 0.1);
-            circle.th2 = Math.max(circle.th2, alpha + 0.1);
-        }
+        circle.update(X1, Y1);
+        circle.update(X2, Y2);
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
     }
@@ -215,30 +227,11 @@ function intrsecCircles(circle1, circle2){
         let X2 = (a*d + b*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.x;
         let Y2 = (b*d - a*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.y;
         
-        // circle1 border
-        let alpha1 = Math.atan2(Y1 - circle1.y, X1 - circle1.x);
-        let beta1 = Math.atan2(Y2 - circle1.y, X2 - circle1.x);
+        circle1.update(X1, Y1);
+        circle1.update(X2, Y2);
 
-        if(alpha1 > beta1) [alpha1, beta1] = [beta1, alpha1];
-        if(beta1 - alpha1 < Math.PI){
-            circle1.th1 = Math.min(circle1.th1, alpha1 - 0.1);
-            circle1.th2 = Math.max(circle1.th2, beta1 + 0.1);
-        }else{
-            circle1.th1 = Math.min(circle1.th1, beta1 - 0.1);
-            circle1.th2 = Math.max(circle1.th2, alpha1 + 2*Math.PI + 0.1);
-        }
-
-        // circle2 border
-        let alpha2 = Math.atan2(Y1 - circle2.y, X1 - circle2.x);
-        let beta2 = Math.atan2(Y2 - circle2.y, X2 - circle2.x);
-        if(alpha2 > beta2) [alpha2, beta2] = [beta2, alpha2];
-        if(beta2 - alpha2 < Math.PI){
-            circle2.th1 = Math.min(circle2.th1, alpha2 - 0.1);
-            circle2.th2 = Math.max(circle2.th2, beta2 + 0.1);
-        }else{
-            circle2.th1 = Math.min(circle2.th1, beta2 - 0.1);
-            circle2.th2 = Math.max(circle2.th2, alpha2 + 2*Math.PI + 0.1);
-        }
+        circle2.update(X1, Y1);
+        circle2.update(X2, Y2);
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
     }
