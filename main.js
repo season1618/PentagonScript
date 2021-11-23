@@ -31,7 +31,7 @@ playButton.addEventListener(
 )
 
 function registerSketch(codeData){
-    if(sketches != 0) sketches = [];
+    sketches.splice(0, sketches.length);
     let varName = {};
     for(let i = 0; i < codeData.length; i++){
         let lv1Name = codeData[i].lv1Name;
@@ -111,29 +111,53 @@ function registerSketch(codeData){
                 let l = varName[rv1Name];
                 let c = varName[rv2Name];
                 let [p1, p2] = intrsecLineAndCircle(l, c);
+
+                l.update(p1.x, p1.y);
+                c.update(p1.x, p1.y);
                 sketches.push(p1);
-                sketches.push(p2);
                 varName[lv1Name] = p1;
-                varName[lv2Name] = p2;
+
+                if(lv2Name != ''){
+                    l.update(p2.x, p2.y);
+                    c.update(p2.x, p2.y);
+                    sketches.push(p2);
+                    varName[lv2Name] = p2;
+                }
             }
             else if(rv1Type == 'Circle' && rv2Type == 'Line'){
                 let c = varName[rv1Name];
                 let l = varName[rv2Name];
                 l.swap();
-                let [p1, p2] = intrsecLineAndCircle(l, c);console.log(l);
+                let [p1, p2] = intrsecLineAndCircle(l, c);
+
+                l.update(p1.x, p1.y);
+                c.update(p1.x, p1.y);
                 sketches.push(p1);
-                sketches.push(p2);
                 varName[lv1Name] = p1;
-                varName[lv2Name] = p2;
+
+                if(lv2Name != ''){
+                    l.update(p2.x, p2.y);
+                    c.update(p2.x, p2.y);
+                    sketches.push(p2);
+                    varName[lv2Name] = p2;
+                }
             }
             else if(rv1Type == 'Circle' && rv2Type == 'Circle'){
                 let c1 = varName[rv1Name];
                 let c2 = varName[rv2Name];
                 let [p1, p2] = intrsecCircles(c1, c2);
+
+                c1.update(p1.x, p1.y);
+                c2.update(p1.x, p1.y);
                 sketches.push(p1);
-                sketches.push(p2);
                 varName[lv1Name] = p1;
-                varName[lv2Name] = p2;
+                
+                if(lv2Name != ''){
+                    c1.update(p2.x, p2.y);
+                    c2.update(p2.x, p2.y);
+                    sketches.push(p2);
+                    varName[lv2Name] = p2;
+                }
             }
             else{
                 console.log('sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');

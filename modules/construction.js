@@ -192,21 +192,15 @@ function intrsecLineAndCircle(line, circle){
     let a = line.y1 - line.y2;
     let b = line.x2 - line.x1;
     let c = line.x1 * line.y2 - line.x2 * line.y1;
-    let d = Math.abs(a * circle.x + b * circle.y + c);
+    let d = a * circle.x + b * circle.y + c;
 
     if(d / Math.sqrt(a**2 + b**2) > circle.r){
         return;
     }else{
-        let X1 = (a*d - b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
-        let Y1 = (b*d + a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
-        let X2 = (a*d + b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
-        let Y2 = (b*d - a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
-        
-        line.update(X1, Y1);
-        line.update(X2, Y2);
-
-        circle.update(X1, Y1);
-        circle.update(X2, Y2);
+        let X1 = (-a*d - b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
+        let Y1 = (-b*d + a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
+        let X2 = (-a*d + b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
+        let Y2 = (-b*d - a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
     }
@@ -226,12 +220,6 @@ function intrsecCircles(circle1, circle2){
         let Y1 = (b*d + a*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.y;
         let X2 = (a*d + b*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.x;
         let Y2 = (b*d - a*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.y;
-        
-        circle1.update(X1, Y1);
-        circle1.update(X2, Y2);
-
-        circle2.update(X1, Y1);
-        circle2.update(X2, Y2);
 
         return [new Point(X1, Y1), new Point(X2, Y2)];
     }
