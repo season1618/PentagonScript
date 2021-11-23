@@ -55,10 +55,6 @@ class Line {
             this.y2 = (1 - t) * this.y1 + t * this.y2;
         }
     }
-    swap(){
-        [this.x1, this.x2] = [this.x2, this.x1];
-        [this.y1, this.y2] = [this.y2, this.y1];
-    }
     translate(moveX, moveY){
         this.x1 += moveX;
         this.y1 += moveY;
@@ -97,7 +93,7 @@ class Circle {
         this.y = p.y;
         this.r = r;
         this.th1 = 10;
-        this.th2 = -10;
+        this.th2 = 10 + 2 * Math.PI;
     }
     update(X, Y){
         let th = Math.atan2(Y - this.y, X - this.x);
@@ -206,6 +202,24 @@ function intrsecLineAndCircle(line, circle){
     }
 }
 
+function intrsecCircleAndLine(circle, line){
+    let a = line.y2 - line.y1;
+    let b = line.x1 - line.x2;
+    let c = line.x2 * line.y1 - line.x1 * line.y2;
+    let d = a * circle.x + b * circle.y + c;
+
+    if(d / Math.sqrt(a**2 + b**2) > circle.r){
+        return;
+    }else{
+        let X1 = (-a*d + b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
+        let Y1 = (-b*d - a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
+        let X2 = (-a*d - b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
+        let Y2 = (-b*d + a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
+
+        return [new Point(X1, Y1), new Point(X2, Y2)];
+    }
+}
+
 function intrsecCircles(circle1, circle2){
     let a = 2 * (circle2.x - circle1.x);
     let b = 2 * (circle2.y - circle1.y);
@@ -226,4 +240,4 @@ function intrsecCircles(circle1, circle2){
 }
 
 export {Point, Line, Circle};
-export {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles};
+export {dist, intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles};

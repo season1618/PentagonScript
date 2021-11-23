@@ -127,9 +127,8 @@ function registerSketch(codeData){
             else if(rv1Type == 'Circle' && rv2Type == 'Line'){
                 let c = varName[rv1Name];
                 let l = varName[rv2Name];
-                l.swap();
-                let [p1, p2] = intrsecLineAndCircle(l, c);
-
+                let [p1, p2] = intrsecCircleAndLine(c, l);
+                
                 l.update(p1.x, p1.y);
                 c.update(p1.x, p1.y);
                 sketches.push(p1);
