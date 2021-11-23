@@ -1,6 +1,6 @@
 import {canvas, ctx, sketches, draw, animation} from './modules/canvas.js';
 import {Point, Line, Circle} from './modules/construction.js';
-import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircles} from './modules/construction.js';
+import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles} from './modules/construction.js';
 import {parse} from './modules/parse.js';
 
 let editor = document.getElementById('editor');
@@ -128,7 +128,7 @@ function registerSketch(codeData){
                 let c = varName[rv1Name];
                 let l = varName[rv2Name];
                 let [p1, p2] = intrsecCircleAndLine(c, l);
-                
+
                 l.update(p1.x, p1.y);
                 c.update(p1.x, p1.y);
                 sketches.push(p1);
