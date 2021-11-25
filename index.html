@@ -8,9 +8,10 @@
 </head>
 <body>
     <canvas id="canvas" width="800" height="800"></canvas>
-    <div id="download">
-        <div><a id="picture" href="" download="canvas.png">picture</a></div>
-        <div><a id="video" href="" download="canvas.mp4">video</a></div>
+    <div id="export">
+        <div><a id="png" href="" download="canvas.png">.png</a></div>
+        <div><button id="video" type="button">video</button></div>
+        <div><a id="webm"  href="" download="canvas.webm">.webm</a></div>
     </div>
     
     <div id="editorpane">
@@ -20,7 +21,7 @@
             <button id="play">play</button>
         </div>
     </div>
-    
-    <script type="module" src="./main.js"></script>
+
+    <script src="./main.js"></script>
 </body>
 </html>

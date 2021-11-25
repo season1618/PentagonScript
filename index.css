@@ -1,5 +1,6 @@
 html {
     height: 100%;
+    font-size: 15px;
 }
 
 body {
@@ -7,12 +8,30 @@ body {
     height: 100%;
     margin: 0;
     overflow: hidden;
+
+    font-family: 'Yu Gothic Light', sans-serif;
+    font-weight: lighter;
 }
 
-#download {
+#export {
     position: absolute;
     left: 20px;
-    bottom: 10%;
+    bottom: 20px;
+}
+
+button {
+    box-sizing: border-box;
+    width: 100px;
+
+    border-radius: 2rem;
+    border-width: thin;
+    background-color: transparent;
+
+    font-family: 'Yu Gothic Light', sans-serif;
+    font-size: 1.5rem;
+    font-weight: lighter;
+
+    margin-top: 5px;
 }
 
 #editorpane {
@@ -27,10 +46,12 @@ body {
 textarea {
     width: 100%;
     height: 80%;
-    top: 0;
-    left: 0;
+
     resize: none;
 
     font-size: 10pt;
     font-family: 'Consolas', 'Courier New', Courier, monospace;
+
+    top: 0;
+    left: 0;
 }
