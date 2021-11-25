@@ -73,9 +73,48 @@ canvas.addEventListener(
     }
 );
 
-document.getElementById('picture').addEventListener(
+document.getElementById('png').addEventListener(
     'click',
-    event => event.target.href = canvas.toDataURL()
+    function(event){
+        event.target.href = canvas.toDataURL();
+    }
+);
+
+document.getElementById('video').addEventListener(
+    'click',
+    async function(event){
+        console.log(canvas.captureStream());       
+          
+        stream = canvas.captureStream(24);
+        var recorder = new MediaRecorder(stream);
+        
+        recorder.onstop = function(e) {
+            /*console.log("stop.");
+        
+            blob = new Blob(chunks, {type: 'video/webm;codecs=vp8'});
+            let download = document.getElementById('download');
+            download.href = URL.createObjectURL(blob);
+            console.log("recorder stopped");*/
+        }
+    
+        recorder.ondataavailable = function(e) {
+            //chunks.push(e.data);
+            let blob = new Blob([e.data], {type: e.data.type});
+            let download = document.getElementById('webm');
+            download.href = URL.createObjectURL(blob);
+        }
+
+        recorder.start();
+        await animation(ctx);
+        recorder.stop();
+    }
+);
+
+document.getElementById('webm').addEventListener(
+    'click',
+    function(event){
+        //event.target.href = str;
+    }
 );
 
 export {canvas, ctx, sketches, draw, animation};
