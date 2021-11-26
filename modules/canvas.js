@@ -85,8 +85,8 @@ document.getElementById('video').addEventListener(
     async function(event){
         console.log(canvas.captureStream());       
           
-        stream = canvas.captureStream(24);
-        var recorder = new MediaRecorder(stream);
+        let stream = canvas.captureStream(24);
+        let recorder = new MediaRecorder(stream);
         
         recorder.onstop = function(e) {
             /*console.log("stop.");

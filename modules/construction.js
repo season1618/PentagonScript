@@ -185,9 +185,9 @@ function intrsecLines(line1, line2){
 }
 
 function intrsecLineAndCircle(line, circle){
-    let a = line.y1 - line.y2;
-    let b = line.x2 - line.x1;
-    let c = line.x1 * line.y2 - line.x2 * line.y1;
+    let a = line.y2 - line.y1;
+    let b = line.x1 - line.x2;
+    let c = line.x2 * line.y1 - line.x1 * line.y2;
     let d = a * circle.x + b * circle.y + c;
 
     if(d / Math.sqrt(a**2 + b**2) > circle.r){
