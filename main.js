@@ -30,6 +30,28 @@ playButton.addEventListener(
     }
 )
 
+function judgeLine(rName, varName){
+    isLine = false;
+    let names = Object.keys(varName);
+    for(let i = 0; i < names.length; i++){
+        for(let j = 0; j < names.length; j++){
+            name1 = names[i]; name2 = names[j];
+            object1 = varName[name1]; object2 = varName[name2];
+            if(object1.type == 'Point' && object2.type == 'Point' && rName == name1 + name2){
+                line = new Line(object1, object2);
+                let id = Math.max(sketches.indexOf(object1), sketches.indexOf(object2)) + 1;
+                sketches.splice(id, 0, line);
+                varName[rName] = line;
+
+                isLine = true;
+                break;
+            }
+        }
+        if(isLine) break;
+    }
+    return isLine;
+}
+
 function registerSketch(codeData){
     sketches.splice(0, sketches.length);
     let varName = {};
@@ -40,28 +62,29 @@ function registerSketch(codeData){
         let rv1Name = codeData[i].rv1Name;
         let rv2Name = codeData[i].rv2Name;
 
-        let rv1Type, rv2Type;
+        // type of right values
+        let rv1Type = null, rv2Type = null;
         if(!isNaN(Number(rv1Name))){
             varName[rv1Name] = Number(rv1Name);
             rv1Type = 'number';
-        }
-        else if(rv1Name in varName){
+        }else if(rv1Name in varName){
             if(typeof(varName[rv1Name]) == 'number') rv1Type = 'number';
             else rv1Type = varName[rv1Name].type;
-        }
-        else{
+        }else if(judgeLine(rv1Name, varName)){
+            rv1Type = 'Line';
+        }else{
             console.log('sentence ' + (i + 1) + ' : ' + rv1Name + ' is undefined.');
             break;
         }
         if(!isNaN(Number(rv2Name))){
             varName[rv2Name] = Number(rv2Name);
             rv2Type = 'number';
-        }
-        else if(rv2Name in varName){
+        }else if(rv2Name in varName){
             if(typeof(varName[rv2Name]) == 'number') rv2Type = 'number';
             else rv2Type = varName[rv2Name].type;
-        }
-        else{
+        }else if(judgeLine(rv2Name, varName)){
+            rv2Type = 'Line';
+        }else{
             console.log('sentence ' + (i + 1) + ' : ' + rv2Name + ' is undefined.');
             break;
         }
@@ -84,6 +107,13 @@ function registerSketch(codeData){
             else if(rv1Type == 'Point' && rv2Type == 'number'){
                 let p = varName[rv1Name];
                 let r = varName[rv2Name];
+                let c = new Circle(p, r);
+                sketches.push(c);
+                varName[lv1Name] = c;
+            }
+            else if(rv1Type == 'Point' && rv2Type == 'Line'){
+                let p = varName[rv1Name];
+                let r = varName[rv2Name].dist;
                 let c = new Circle(p, r);
                 sketches.push(c);
                 varName[lv1Name] = c;
