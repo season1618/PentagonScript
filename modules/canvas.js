@@ -75,31 +75,28 @@ canvas.addEventListener(
 
 document.getElementById('png').addEventListener(
     'click',
-    function(event){
-        event.target.href = canvas.toDataURL();
+    function(){
+        let anchor = document.createElement('a');
+        anchor.href = canvas.toDataURL();
+        anchor.download = 'canvas.png';
+        anchor.click();
     }
 );
 
-document.getElementById('video').addEventListener(
+document.getElementById('webm').addEventListener(
     'click',
-    async function(event){          
-        let stream = canvas.captureStream(24);
-        let recorder = new MediaRecorder(stream);
+    async function(){
+        console.log(canvas.captureStream());       
+          
+        stream = canvas.captureStream(24);
+        var recorder = new MediaRecorder(stream);
         
-        recorder.onstop = function(e) {
-            /*console.log("stop.");
-        
-            blob = new Blob(chunks, {type: 'video/webm;codecs=vp8'});
-            let download = document.getElementById('download');
-            download.href = URL.createObjectURL(blob);
-            console.log("recorder stopped");*/
-        }
-    
         recorder.ondataavailable = function(e) {
             let blob = new Blob([e.data], {type: e.data.type});
-            console.log(e.data);
-            let anchor = document.getElementById('webm');
-            anchor.href = URL.createObjectURL(e.data);
+            let anchor = document.createElement('a');
+            anchor.href = URL.createObjectURL(blob);
+            anchor.download = 'canvas.webm';
+            anchor.click();
         }
 
         recorder.start();

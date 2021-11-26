@@ -43,6 +43,21 @@ button {
     width: 30%;
 }
 
+button {
+    box-sizing: border-box;
+    width: 100px;
+
+    border-radius: 2rem;
+    border-width: thin;
+    background-color: transparent;
+
+    font-family: 'Yu Gothic Light', sans-serif;
+    font-size: 1.5rem;
+    font-weight: lighter;
+
+    margin-top: 5px;
+}
+
 textarea {
     width: 100%;
     height: 80%;
