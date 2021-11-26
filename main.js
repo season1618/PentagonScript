@@ -31,14 +31,14 @@ playButton.addEventListener(
 )
 
 function judgeLine(rName, varName){
-    isLine = false;
+    let isLine = false;
     let names = Object.keys(varName);
     for(let i = 0; i < names.length; i++){
         for(let j = 0; j < names.length; j++){
-            name1 = names[i]; name2 = names[j];
-            object1 = varName[name1]; object2 = varName[name2];
+            let name1 = names[i], name2 = names[j];
+            let object1 = varName[name1], object2 = varName[name2];
             if(object1.type == 'Point' && object2.type == 'Point' && rName == name1 + name2){
-                line = new Line(object1, object2);
+                let line = new Line(object1, object2);
                 let id = Math.max(sketches.indexOf(object1), sketches.indexOf(object2)) + 1;
                 sketches.splice(id, 0, line);
                 varName[rName] = line;
