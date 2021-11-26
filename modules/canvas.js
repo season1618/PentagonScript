@@ -98,7 +98,8 @@ document.getElementById('webm').addEventListener(
         recorder.ondataavailable = function(e) {
             let blob = new Blob([e.data], {type: e.data.type});
             console.log(e.data);
-            event.target.href = URL.createObjectURL(e.data);
+            let anchor = document.getElementById('webm');
+            anchor.href = URL.createObjectURL(e.data);
         }
 
         recorder.start();
