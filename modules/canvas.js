@@ -80,7 +80,7 @@ document.getElementById('png').addEventListener(
     }
 );
 
-document.getElementById('webm').addEventListener(
+document.getElementById('video').addEventListener(
     'click',
     async function(event){          
         let stream = canvas.captureStream(24);
