@@ -98,7 +98,7 @@ document.getElementById('video').addEventListener(
         }
     
         recorder.ondataavailable = function(e) {
-            //chunks.push(e.data);
+            chunks.push(e.data);
             let blob = new Blob([e.data], {type: e.data.type});
             let download = document.getElementById('webm');
             download.href = URL.createObjectURL(blob);
