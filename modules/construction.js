@@ -93,33 +93,21 @@ class Circle {
         this.x = p.x;
         this.y = p.y;
         this.r = r;
-        this.th1 = 10;
-        this.th2 = 10 + 2 * Math.PI;
+        this.thArray = [];
     }
     update(X, Y){
         let th = Math.atan2(Y - this.y, X - this.x);
-        if(this.th1 == 10){
-            this.th1 = th - 0.1;
-            this.th2 = th + 0.1;
-            return;
-        }
-
-        let alpha, beta;
-        if(th <= 0){
-            alpha = th;
-            beta = th + 2 * Math.PI;
+        this.thArray.push([th - 0.1, th + 0.1]);
+    }
+    compareSegment(a, b){
+        if(a[0] < b[0]){
+            return -1;
+        }else if(a[0] == b[0]){
+            if(a[1] < b[1]) return -1;
+            else if(a[1] == b[1]) return 0;
+            else return 1;
         }else{
-            alpha = th - 2 * Math.PI;
-            beta = th;
-        }
-
-        if(this.th1 <= alpha && alpha <= this.th2);
-        else if(this.th1 <= beta && beta <= this.th2);
-        else if(this.th2 < alpha) this.th2 = alpha + 0.1;
-        else if(beta < this.th1) this.th1 = beta - 0.1;
-        else{
-            if(this.th1 - alpha < beta - this.th2) this.th1 = alpha - 0.1;
-            else this.th2 = beta + 0.1;
+            return 1;
         }
     }
     translate(moveX, moveY){
@@ -132,22 +120,36 @@ class Circle {
         this.r = scaleRate * this.r;
     }
     draw(ctx){
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, this.th1, this.th2, false);
-        ctx.stroke();
+        for(let i = 0; i < this.thArray.length; i++){
+            let alpha = this.thArray[i][0];
+            let beta = this.thArray[i][1];
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, alpha, beta, false);
+            ctx.stroke();
+        }
     }
     async animation(ctx){
-        const n = 0.2 * this.r * (this.th2 - this.th1);
-        for(let i = 0; i < n; i++){
-            ctx.beginPath();
-            ctx.arc(
-                this.x, this.y, this.r,
-                this.th1 * (n-i)/n + this.th2 * i/n,
-                this.th1 * (n-i-1)/n + this.th2 * (i+1)/n,
-                false
-            );
-            ctx.stroke();
-            await wait(10);
+        this.thArray.sort(this.compareSegment);
+        for(let i = 0; i + 1 < this.thArray.length; i++){
+            if(this.thArray[i+1][0] < this.thArray[i][1]){
+                let alpha = Math.min(this.thArray[i][0], this.thArray[i+1][0]);
+                let beta = Math.max(this.thArray[i][1], this.thArray[i+1][1]);
+                this.thArray.splice(i, 2, [alpha, beta]);
+            }
+        }
+        for(let i = 0; i < this.thArray.length; i++){
+            const n = 0.2 * this.r * (this.thArray[i][1] - this.thArray[i][0]);
+            for(let j = 0; j < n; j++){
+                ctx.beginPath();
+                ctx.arc(
+                    this.x, this.y, this.r,
+                    this.thArray[i][0] * (n-j)/n + this.thArray[i][1] * j/n,
+                    this.thArray[i][0] * (n-j-1)/n + this.thArray[i][1] * (j+1)/n,
+                    false
+                );
+                ctx.stroke();
+                await wait(10);
+            }
         }
     }
 }
