@@ -112,10 +112,12 @@ function registerSketch(codeData){
                 let c = varName[rv2Name];
                 let [p1, p2] = intrsecLineAndCircle(l, c);
 
-                l.update(p1.x, p1.y);
-                c.update(p1.x, p1.y);
-                sketches.push(p1);
-                varName[lv1Name] = p1;
+                if(lv1Name != ''){
+                    l.update(p1.x, p1.y);
+                    c.update(p1.x, p1.y);
+                    sketches.push(p1);
+                    varName[lv1Name] = p1;
+                }
 
                 if(lv2Name != ''){
                     l.update(p2.x, p2.y);
@@ -129,10 +131,12 @@ function registerSketch(codeData){
                 let l = varName[rv2Name];
                 let [p1, p2] = intrsecCircleAndLine(c, l);
 
-                l.update(p1.x, p1.y);
-                c.update(p1.x, p1.y);
-                sketches.push(p1);
-                varName[lv1Name] = p1;
+                if(lv1Name != ''){
+                    l.update(p1.x, p1.y);
+                    c.update(p1.x, p1.y);
+                    sketches.push(p1);
+                    varName[lv1Name] = p1;
+                }
 
                 if(lv2Name != ''){
                     l.update(p2.x, p2.y);
@@ -146,10 +150,12 @@ function registerSketch(codeData){
                 let c2 = varName[rv2Name];
                 let [p1, p2] = intrsecCircles(c1, c2);
 
-                c1.update(p1.x, p1.y);
-                c2.update(p1.x, p1.y);
-                sketches.push(p1);
-                varName[lv1Name] = p1;
+                if(lv1Name != ''){
+                    c1.update(p1.x, p1.y);
+                    c2.update(p1.x, p1.y);
+                    sketches.push(p1);
+                    varName[lv1Name] = p1;
+                }
                 
                 if(lv2Name != ''){
                     c1.update(p2.x, p2.y);

@@ -20,26 +20,20 @@ function parse(str){
 
 function readLeftValue(str){
     let lv1Name = '', lv2Name = '';
-    while(str[i] == ' ' || str[i] == '\n') i++;
-    if(str[i] == '['){
+    while(i < str.length){
+        if(str[i] == ',') break;
+        if(str[i] == '='){
+            i++;
+            return [lv1Name, lv2Name];
+        }
+        if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
         i++;
-        while(i < str.length){
-            if(str[i] == ',') break;
-            if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
-            i++;
-        }
+    }
+    i++;
+    while(i < str.length){
+        if(str[i] == '=') break;
+        if(str[i] != ' ' && str[i] != '\n') lv2Name += str[i];
         i++;
-        while(i < str.length){
-            if(str[i] == '=') break;
-            if(str[i] != ' ' && str[i] != '\n' && str[i] != ']') lv2Name += str[i];
-            i++;
-        }
-    }else{
-        while(i < str.length){
-            if(str[i] == '=') break;
-            if(str[i] != ' ' && str[i] != '\n') lv1Name += str[i];
-            i++;
-        }
     }
     i++;
     return [lv1Name, lv2Name];
