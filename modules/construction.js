@@ -142,7 +142,7 @@ class Circle {
         ctx.stroke();
     }
     async animation(ctx){
-        const n = 0.2 * this.r * (this.th2 - this.th1);
+        const n = 1.8 * Math.sqrt(this.r * (this.th2 - this.th1));
         for(let i = 0; i < n; i++){
             ctx.beginPath();
             ctx.arc(
