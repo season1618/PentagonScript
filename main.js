@@ -4,6 +4,7 @@ import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecC
 import {parse} from './modules/parse.js';
 
 let editor = document.getElementById('editor');
+let error = document.getElementById('error');
 let drawButton = document.getElementById('draw');
 let playButton = document.getElementById('play');
 
@@ -74,7 +75,7 @@ function registerSketch(codeData){
         }else if(judgeLine(rv1Name, varName)){
             rv1Type = 'Line';
         }else{
-            console.log('sentence ' + (i + 1) + ' : ' + rv1Name + ' is undefined.');
+            error.value += 'sentence ' + (i + 1) + ' : ' + rv1Name + ' is undefined.';
             break;
         }
         if(!isNaN(Number(rv2Name))){
@@ -86,7 +87,7 @@ function registerSketch(codeData){
         }else if(judgeLine(rv2Name, varName)){
             rv2Type = 'Line';
         }else{
-            console.log('sentence ' + (i + 1) + ' : ' + rv2Name + ' is undefined.');
+            error.value += 'sentence ' + (i + 1) + ' : ' + rv2Name + ' is undefined.';
             break;
         }
 
@@ -120,7 +121,7 @@ function registerSketch(codeData){
                 varName[lv1Name] = c;
             }
             else{
-                console.log('sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
+                error.value += 'sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.';
                 break;
             }
         }
@@ -196,7 +197,7 @@ function registerSketch(codeData){
                 }
             }
             else{
-                console.log('sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.');
+                error.value += 'sentence ' + (i + 1) + ': { ' + rv1Type + ', ' + rv2Type + ' } is invalid.';
                 break;
             }
         }
