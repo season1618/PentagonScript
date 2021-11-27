@@ -75,7 +75,7 @@ class Line {
         ctx.stroke();
     }
     async animation(ctx){
-        const n = 50;
+        const n = 0.7 * Math.cbrt((this.x2 - this.x1)**2 + (this.y2 - this.y1)**2);
         for(let i = 0; i < n; i++){
             ctx.beginPath();
             ctx.moveTo(this.x1 * (n-i)/n + this.x2 * i/n, this.y1 * (n-i)/n + this.y2 * i/n);
@@ -150,6 +150,7 @@ class Circle {
                 ctx.stroke();
                 await wait(10);
             }
+            await wait(80);
         }
     }
 }
