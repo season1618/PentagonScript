@@ -121,6 +121,11 @@ class Circle {
             if(this.th1 - alpha < beta - this.th2) this.th1 = alpha - 0.1;
             else this.th2 = beta + 0.1;
         }
+
+        if(this.th2 - this.th1 > 2 * Math.PI * 0.75){
+            this.th1 = 0;
+            this.th2 = 2 * Math.PI;
+        }
     }
     translate(moveX, moveY){
         this.x += moveX;
