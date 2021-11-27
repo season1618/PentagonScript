@@ -33,6 +33,10 @@ let canvasScale = 100;
 let mousePressed = false;
 let mousePosX = 0; let mousePosY = 0;
 
+function setCanvasScale(){
+    canvasScale = 100;
+}
+
 canvas.addEventListener(
     'mousedown',
     function(event){
@@ -104,4 +108,4 @@ document.getElementById('webm').addEventListener(
     }
 );
 
-export {canvas, ctx, sketches, canvasScale, draw, animation};
+export {canvas, ctx, sketches, setCanvasScale, draw, animation};
