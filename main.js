@@ -1,4 +1,4 @@
-import {canvas, ctx, sketches, draw, animation} from './modules/canvas.js';
+import {canvas, ctx, sketches, canvasScale, draw, animation} from './modules/canvas.js';
 import {Point, Line, Circle} from './modules/construction.js';
 import {dist, intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles} from './modules/construction.js';
 import {parse} from './modules/parse.js';
@@ -10,6 +10,7 @@ let playButton = document.getElementById('play');
 editor.addEventListener(
     'change',
     function(){
+        canvasScale = 100;
         let codeString = editor.value;
         let codeData = parse(codeString);
         registerSketch(codeData);

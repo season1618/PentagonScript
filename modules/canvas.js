@@ -65,11 +65,12 @@ canvas.addEventListener(
 canvas.addEventListener(
     'wheel',
     function(event){
-        if(canvasScale < 50 && event.deltaY > 0) return;
+        if(canvasScale < 30 && event.deltaY > 0) return;
         if(1000 < canvasScale && event.deltaY < 0) return;
-        scale(mousePosX, mousePosY, (canvasScale - event.deltaY / 10) / canvasScale);
+        if(event.deltaY < 0) scale(mousePosX, mousePosY, 1.2);
+        else scale(mousePosX, mousePosY, 1/1.2);
         draw(ctx);
-        canvasScale -= event.deltaY / 10;
+        canvasScale -= event.deltaY / 20;
     }
 );
 
@@ -85,9 +86,7 @@ document.getElementById('png').addEventListener(
 
 document.getElementById('webm').addEventListener(
     'click',
-    async function(){
-        console.log(canvas.captureStream());       
-          
+    async function(){          
         stream = canvas.captureStream(24);
         var recorder = new MediaRecorder(stream);
         
@@ -105,4 +104,4 @@ document.getElementById('webm').addEventListener(
     }
 );
 
-export {canvas, ctx, sketches, draw, animation};
+export {canvas, ctx, sketches, canvasScale, draw, animation};
