@@ -6,7 +6,7 @@
 
 .webmは何故か使えません。
 
-[デモ](https://github.com/season1618/PentagonScript/public/demo.mp4)
+デモ: https://github.com/season1618/PentagonScript/public/demo.mp4
 
 ## 構文
 
