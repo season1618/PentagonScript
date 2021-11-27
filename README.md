@@ -1,8 +1,11 @@
 # PentagonScript
 
 コンパスと三角定規による作図を記述する言語。
+
 [サイト](https://season1618.github.io/PentagonScript/)
+
 .webmは何故か使えません。
+
 [デモ](https://github.com/season1618/PentagonScript/public/demo.mp4)
 
 ## 構文
