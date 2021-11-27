@@ -13,10 +13,53 @@ body {
     font-weight: lighter;
 }
 
+#codepane {
+    padding: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+}
+
+#editor {
+    width: 100%;
+    height: 70%;
+
+    resize: none;
+
+    font-size: 10pt;
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+
+    top: 0;
+    left: 0;
+}
+
+#error {
+    width: 100%;
+    height: 30%;
+
+    resize: none;
+
+    font-size: 10pt;
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+
+    top: 0;
+    left: 0;
+}
+
 #export {
     position: absolute;
     left: 20px;
     bottom: 20px;
+}
+
+#run {
+    width: 100%;
+
+    position: absolute;
+    left: 20px;
+    bottom: 31%;
 }
 
 button {
@@ -35,41 +78,4 @@ button {
 }
 button:hover {
     transform: scale(1.1);
-}
-
-#editorpane {
-    padding: 0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 30%;
-}
-
-button {
-    box-sizing: border-box;
-    width: 100px;
-
-    border-radius: 2rem;
-    border-width: thin;
-    background-color: transparent;
-
-    font-family: 'Yu Gothic Light', sans-serif;
-    font-size: 1.5rem;
-    font-weight: lighter;
-
-    margin-top: 5px;
-}
-
-textarea {
-    width: 100%;
-    height: 80%;
-
-    resize: none;
-
-    font-size: 10pt;
-    font-family: 'Consolas', 'Courier New', Courier, monospace;
-
-    top: 0;
-    left: 0;
 }

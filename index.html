@@ -7,20 +7,22 @@
     <title>Pentagon Script</title>
 </head>
 <body>
-    <canvas id="canvas" width="800" height="800"></canvas>
-    <div id="export">
-        <div><button id="png" type="button">.png</button></div>
-        <div><button id="webm" type="button">.webm</button></div>
-    </div>
+    <canvas id="canvas"></canvas>
     
-    <div id="editorpane">
+    <div id="codepane">
         <textarea id="editor"></textarea>
+        <textarea id="error" disabled></textarea>
         <div id="run">
             <button id="draw">draw</button>
             <button id="play">play</button>
         </div>
     </div>
+    
+    <div id="export">
+        <div><button id="png" type="button">.png</button></div>
+        <div><button id="webm" type="button">.webm</button></div>
+    </div>
 
-    <script type="module" src="./main.js"></script>
+    <script tpye="module" src="./main.js"></script>
 </body>
 </html>
