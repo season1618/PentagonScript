@@ -38,14 +38,23 @@ class NodeExpr extends Node {
 
 class SymbolTable {
     constructor(){
+        this.top = null;
     }
-    add(name, type, cont){
-        if(name in this) error(name + ' is already defined');
-        else this[name] = { type: type, val: cont };
+    add(name, type, val){
+        for(let item = this.top; item != null; item = item.next){
+            if(item.name == name){
+                error(name + ' is already defined');
+            }
+        }
+        this.top = { next: this.top, name: name, type: type, val: val };
     }
     find(name){
-        if(name in this) return this[name];
-        else error(name + ' is undefined');
+        for(let item = this.top; item != null; item = item.next){
+            if(item.name == name){
+                return { type: item.type, val: item.val };
+            }
+        }
+        error(name + ' is undefined');
     }
 }
 
@@ -88,7 +97,7 @@ function nextType(){
         }
         cur = cur.next;
         return type;
-    }console.log(cur);
+    }
     error(cur.str + ' is not type');
 }
 
