@@ -53,14 +53,6 @@ function tokenize(src){
         error('invalid token');
     }
     cur.push(new Token(TK_EOF));
-
-    // cur = tokenHead.next;
-    // while(cur.kind != TK_EOF){
-    //     console.log(cur);
-    //     // if(cur.kind == TK_NUM) console.log(cur.val + ' ');
-    //     // else console.log(cur.str + ' ');
-    //     cur = cur.next;
-    // }
     return tokenHead.next;
 
     function nextNumber(){

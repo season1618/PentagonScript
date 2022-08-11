@@ -1,6 +1,7 @@
+import { ctx } from './canvas.js';
+
 class Point {
     constructor(x, y, lhs = null, rhs = null){
-        this.type = 'Point';
         this.x = x;
         this.y = y;
 
@@ -15,12 +16,12 @@ class Point {
         this.x = scaleRate * (this.x - mousePosX) + mousePosX;
         this.y = scaleRate * (this.y - mousePosY) + mousePosY;
     }
-    draw(ctx){
+    draw(){
         ctx.beginPath();
         ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
     }
-    animation(ctx){
+    animation(){
         ctx.beginPath();
         ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
         ctx.fill();
@@ -30,7 +31,6 @@ class Point {
 class Line {
     // 1st postulate
     constructor(p1, p2){
-        this.type = 'Line';
         this.x1 = p1.x;
         this.y1 = p1.y;
         this.x2 = p2.x;
@@ -71,13 +71,13 @@ class Line {
         this.x2 = scaleRate * (this.x2 - mousePosX) + mousePosX;
         this.y2 = scaleRate * (this.y2 - mousePosY) + mousePosY;
     }
-    draw(ctx){
+    draw(){
         ctx.beginPath();
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
         ctx.stroke();
     }
-    async animation(ctx){
+    async animation(){
         const n = 0.7 * Math.cbrt((this.x2 - this.x1)**2 + (this.y2 - this.y1)**2);
         for(let i = 0; i < n; i++){
             ctx.beginPath();
@@ -92,7 +92,6 @@ class Line {
 class Circle {
     // 3rd postulate
     constructor(p, r){
-        this.type = 'Circle';
         this.x = p.x;
         this.y = p.y;
         this.r = r;
@@ -139,12 +138,12 @@ class Circle {
         this.y = scaleRate* (this.y - mousePosY) + mousePosY;
         this.r = scaleRate * this.r;
     }
-    draw(ctx){
+    draw(){
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.r, this.th1, this.th2, false);
         ctx.stroke();
     }
-    async animation(ctx){
+    async animation(){
         const n = 1.8 * Math.sqrt(this.r * (this.th2 - this.th1));
         for(let i = 0; i < n; i++){
             ctx.beginPath();

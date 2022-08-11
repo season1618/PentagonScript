@@ -1,4 +1,4 @@
-import { ctx, sketches, setCanvasScale, draw, animation } from './modules/canvas.js';
+import { sketch, setCanvasScale, draw, animation } from './modules/canvas.js';
 import { interpreter } from './interpreter/main.js';
 
 let editor = document.getElementById('editor');
@@ -10,21 +10,21 @@ editor.addEventListener(
     'change',
     function(){
         setCanvasScale();
-        sketches.splice(0, sketches.length);
-        interpreter(editor.value);console.log(sketches);
+        sketch.splice(0, sketch.length);
+        interpreter(editor.value);
     }
 )
 
 drawButton.addEventListener(
     'click',
     function(){
-        draw(ctx);
+        draw();
     }
 );
 
 playButton.addEventListener(
     'click',
     function(){
-        animation(ctx);
+        animation();
     }
 );

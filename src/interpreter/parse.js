@@ -2,15 +2,12 @@ import { Point, Line, Circle } from '../modules/construction.js';
 import { intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles } from '../modules/construction.js';
 import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
 import { error } from './modules/error.js';
-import { sketches } from '../modules/canvas.js';
+import { sketch } from '../modules/canvas.js';
 
 const ND_IF = 0;
 const ND_FOR = 1;
 const ND_RETURN = 2;
 const ND_EXPR = 3;
-const ND_POINT = 4;
-const ND_LINE = 5;
-const ND_CIRCLE = 6;
 
 const TY_BOOL = 0
 const TY_INT = 1;
@@ -142,7 +139,7 @@ function stmt(){
                     table.add(names[i], inits[i].type, inits[i].val);
                     inits[i].val.lhs.update(inits[i].val.x, inits[i].val.y);
                     inits[i].val.rhs.update(inits[i].val.x, inits[i].val.y);
-                    sketches.push(inits[i].val);
+                    sketch.push(inits[i].val);
                 }else{
                     error('assignment between the different types');
                 }
@@ -157,7 +154,7 @@ function stmt(){
                 init = init.val[0];
                 init.val.lhs.update(init.val.x, init.val.y);
                 init.val.rhs.update(init.val.x, init.val.y);
-                sketches.push(init.val);
+                sketch.push(init.val);
             }
             if(type == null || type == init.type) table.add(name, init.type, init.val);
             else error('assignment between the different types');
@@ -315,7 +312,7 @@ function prim(){
         expect(')');
         if(x.type == TY_INT && y.type == TY_INT){
             let point = new Point(x.val, y.val);
-            sketches.push(point);
+            sketch.push(point);
             return new NodeExpr(TY_POINT, point);
         }
         else error('invalid types of arguments');
@@ -328,7 +325,7 @@ function prim(){
         expect(')')
         if(p.type == TY_POINT && q.type == TY_POINT){
             let line = new Line(p.val, q.val);
-            sketches.push(line);
+            sketch.push(line);
             return new NodeExpr(TY_LINE, line);
         }
         else error('invalid types of arguments');
@@ -342,7 +339,7 @@ function prim(){
         expect(')');
         if(p.type == TY_POINT && r.type == TY_INT){
             let circle = new Circle(p.val, r.val);
-            sketches.push(circle);
+            sketch.push(circle);
             return new NodeExpr(TY_CIRCLE, circle);
         }
         else error('invalid types of arguments');

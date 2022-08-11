@@ -3,35 +3,36 @@ const ctx = canvas.getContext('2d');
 canvas.width = document.documentElement.clientWidth - 10;
 canvas.height = document.documentElement.clientHeight - 10;
 
-let sketches = [];
+let sketch = [];
 
 function translate(moveX, moveY){
-    for(let i = 0; i < sketches.length; i++){
-        sketches[i].translate(moveX, moveY);
+    for(let i = 0; i < sketch.length; i++){
+        sketch[i].translate(moveX, moveY);
     }
 }
 function scale(mousePosX, mousePosY, scaleRate){
-    for(let i = 0; i < sketches.length; i++){
-        sketches[i].scale(mousePosX, mousePosY, scaleRate);
+    for(let i = 0; i < sketch.length; i++){
+        sketch[i].scale(mousePosX, mousePosY, scaleRate);
     }
 }
 
-function draw(ctx){
+function draw(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let i = 0; i < sketches.length; i++){
-        sketches[i].draw(ctx);
+    for(let i = 0; i < sketch.length; i++){
+        sketch[i].draw();
     }
 }
-async function animation(ctx){
+async function animation(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let i = 0; i < sketches.length; i++){
-        await sketches[i].animation(ctx);
+    for(let i = 0; i < sketch.length; i++){
+        await sketch[i].animation();
     }
 }
 
 let canvasScale = 100;
 let mousePressed = false;
-let mousePosX = 0; let mousePosY = 0;
+let mousePosX = 0;
+let mousePosY = 0;
 
 function setCanvasScale(){
     canvasScale = 100;
@@ -108,4 +109,4 @@ document.getElementById('webm').addEventListener(
     }
 );
 
-export {canvas, ctx, sketches, setCanvasScale, draw, animation};
+export {canvas, ctx, sketch, setCanvasScale, draw, animation};
