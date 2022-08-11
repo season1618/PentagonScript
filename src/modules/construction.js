@@ -1,8 +1,11 @@
 class Point {
-    constructor(x, y){
+    constructor(x, y, lhs = null, rhs = null){
         this.type = 'Point';
         this.x = x;
         this.y = y;
+
+        this.lhs = lhs;
+        this.rhs = rhs;
     }
     translate(moveX, moveY){
         this.x += moveX;
@@ -204,7 +207,7 @@ function intrsecLineAndCircle(line, circle){
         let X2 = (-a*d + b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
         let Y2 = (-b*d - a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
 
-        return [new Point(X1, Y1), new Point(X2, Y2)];
+        return [new Point(X1, Y1, line, circle), new Point(X2, Y2, line, circle)];
     }
 }
 
@@ -222,7 +225,7 @@ function intrsecCircleAndLine(circle, line){
         let X2 = (-a*d - b*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.x;
         let Y2 = (-b*d + a*Math.sqrt((a**2 + b**2)*circle.r**2 - d**2)) / (a**2 + b**2) + circle.y;
 
-        return [new Point(X1, Y1), new Point(X2, Y2)];
+        return [new Point(X1, Y1, circle, line), new Point(X2, Y2, circle, line)];
     }
 }
 
@@ -241,7 +244,7 @@ function intrsecCircles(circle1, circle2){
         let X2 = (a*d + b*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.x;
         let Y2 = (b*d - a*Math.sqrt((a**2 + b**2)*circle1.r**2 - d**2)) / (a**2 + b**2) + circle1.y;
 
-        return [new Point(X1, Y1), new Point(X2, Y2)];
+        return [new Point(X1, Y1, circle1, circle2), new Point(X2, Y2, circle1, circle2)];
     }
 }
 
