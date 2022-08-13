@@ -1,20 +1,7 @@
-import { Point, Line, Circle } from '../modules/construction.js';
-import { intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles } from '../modules/construction.js';
 import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
+import { ND_IF, ND_FOR, ND_RETURN, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN } from './modules/node.js';
+import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 import { error } from './modules/error.js';
-import { sketch } from '../modules/canvas.js';
-
-const ND_IF = 0;
-const ND_FOR = 1;
-const ND_RETURN = 2;
-const ND_EXPR = 3;
-
-const TY_BOOL = 0
-const TY_INT = 1;
-const TY_POINT = 2;
-const TY_LINE = 3;
-const TY_CIRCLE = 4;
-const TY_LIST = 5;
 
 class Node {
     constructor(kind){
@@ -28,10 +15,42 @@ class NodeIf extends Node {
     }
 }
 
-class NodeExpr extends Node {
-    constructor(type, val){
-        super(ND_EXPR);
+class NodeBinary extends Node {
+    constructor(kind, type, lhs, rhs){
+        super(kind);
         this.type = type;
+        this.lhs = lhs;
+        this.rhs = rhs;
+    }
+}
+
+class NodeUnary extends Node {
+    constructor(kind, type, operand){
+        super(kind);
+        this.type = type;
+        this.operand = operand;
+    }
+}
+
+class NodePair extends Node {
+    constructor(first, second){
+        super(ND_PAIR);
+        this[0] = first;
+        this[1] = second;
+    }
+}
+class NodeIdent extends Node {
+    constructor(type, name){
+        super(ND_IDENT);
+        this.type = type;
+        this.name = name;
+    }
+}
+
+class NodeNum extends Node {
+    constructor(val){
+        super(ND_NUM);
+        this.type = TY_INT;
         this.val = val;
     }
 }
@@ -40,18 +59,18 @@ class SymbolTable {
     constructor(){
         this.top = null;
     }
-    add(name, type, val){
+    add(name, type){
         for(let item = this.top; item != null; item = item.next){
             if(item.name == name){
                 error(name + ' is already defined');
             }
         }
-        this.top = { next: this.top, name: name, type: type, val: val };
+        this.top = { next: this.top, name: name, type: type };
     }
     find(name){
         for(let item = this.top; item != null; item = item.next){
             if(item.name == name){
-                return { type: item.type, val: item.val };
+                return item.type;
             }
         }
         error(name + ' is undefined');
@@ -59,6 +78,7 @@ class SymbolTable {
 }
 
 let cur;
+let nodeList;
 let table;
 
 function expect(str){
@@ -112,10 +132,12 @@ function nextNum(){
 
 function parse(tokenHead){
     cur = tokenHead;
+    nodeList = [];
     table = new SymbolTable();
     while(cur.kind != TK_EOF){
-        stmt();
+        nodeList.push(stmt());
     }
+    return nodeList;
 }
 
 function stmt(){
@@ -125,54 +147,46 @@ function stmt(){
     }
     if(expect('var')){
         if(expect('(')){
-            let names = [];
-            let types = [];
-            while(true){
-                names.push(nextIdent().str);
-                if(expect(':')) types.push(nextType());
-                else types.push(null);
-                if(expect(',')) continue;
-                if(expect(')')) break;
+            let idents;
+            let name = nextIdent().str;
+            if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
+            if(expect(',')){
+                let name2 = nextIdent().str;
+                if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
+                table.add(name, TY_POINT);
+                table.add(name2, TY_POINT);
+                idents = new NodePair(new NodeIdent(TY_POINT, name), new NodeIdent(TY_POINT, name2));
+            }else{
+                table.add(name, TY_POINT);
+                idents = new NodeIdent(TY_POINT, name);
             }
+            expect(')');
             expect('=');
             let inits = expr();
-            if(inits.type == TY_LIST) inits = inits.val;
-            else error('rvalue is not a list');
+            expect(';');
 
-            if(names.length != inits.length){
-                error('the number of left value and right value does not correspond');
-            }
-
-            for(let i = 0; i < names.length; i++){
-                if(types[i] == null || types[i] == inits[i].type){
-                    table.add(names[i], inits[i].type, inits[i].val);
-                    inits[i].val.lhs.update(inits[i].val.x, inits[i].val.y);
-                    inits[i].val.rhs.update(inits[i].val.x, inits[i].val.y);
-                    sketch.push(inits[i].val);
-                }else{
-                    error('assignment between the different types');
-                }
-            }
+            if(inits.type == TY_LIST) return new NodeBinary(ND_ASSIGN, null, idents, inits);
+            error('the types of both sides does not correspond');
         }else{
             let name = nextIdent().str;
-            let type = null;
-            if(expect(':')) type = nextType();
+            let lType = null;
+            if(expect(':')) lType = nextType();
             expect('=');
             let init = expr();
-            if(init.type == TY_LIST){
-                init = init.val[0];
-                init.val.lhs.update(init.val.x, init.val.y);
-                init.val.rhs.update(init.val.x, init.val.y);
-                sketch.push(init.val);
+            expect(';');
+
+            let rType = init.type == TY_LIST ? TY_POINT : init.type;
+            if(lType == null || lType == rType){
+                table.add(name, rType);
+                let ident = new NodeIdent(rType, name);
+                return new NodeBinary(ND_ASSIGN, null, ident, init);
             }
-            if(type == null || type == init.type) table.add(name, init.type, init.val);
-            else error('assignment between the different types');
+            error('the types of both sides does not correspond');
         }
-        expect(';');
-        return;
     }
-    expr();
+    let node = expr();
     expect(';');
+    return node;
 }
 
 function expr(){
@@ -183,7 +197,7 @@ function or(){
     let lhs = and();
     while(expect('||')){
         let rhs = and();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val || rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_OR, TY_BOOL, lhs, rhs);
         else error('invalid types of logical operator "||"');
     }
     return lhs;
@@ -193,7 +207,7 @@ function and(){
     let lhs = relate();
     while(expect('&&')){
         let rhs = relate();
-        if(lhs.type == TY_BOOL && rhs.type == TY_BOOL) return NodeExpr(TY_BOOL, lhs.val && rhs.val);
+        if(lhs.type == TY_BOOL && rhs.type == TY_BOOL) lhs = NodeBinary(ND_AND, TY_BOOL, lhs, rhs);
         else error('invalid types of logical operator "&&"');
     }
     return lhs;
@@ -203,32 +217,32 @@ function relate(){
     let lhs = add();
     if(expect('==')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val == rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_EQ, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "=="');
     }
     if(expect('!=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val != rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_NE, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "!="');
     }
     if(expect('<')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val < rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LT, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "<"');
     }
     if(expect('<=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val <= rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LE, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "<="');
     }
     if(expect('>')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val > rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LT, TY_BOOL, rhs, lhs);
         else error('invalid types of relational operator ">"');
     }
     if(expect('>=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) return NodeExpr(TY_BOOL, lhs.val >= rhs.val);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LE, TY_BOOL, rhs, lhs);
         else error('invalid types of relational operator ">="');
     }
     return lhs;
@@ -239,13 +253,13 @@ function add(){
     while(true){
         if(expect('+')){
             let rhs = mul();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs.val += rhs.val;
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_ADD, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "+"');
             continue;
         }
         if(expect('-')){
             let rhs = mul();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs.val -= rhs.val;
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_SUB, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "-"');
             continue;
         }
@@ -258,19 +272,19 @@ function mul(){
     while(true){
         if(expect('*')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs.val *= rhs.val;
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_MUL, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "*"');
             continue;
         }
         if(expect('/')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs.val /= rhs.val;
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_DIV, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "/"');
             continue;
         }
         if(expect('%')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs.val %= rhs.val;
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_MOD, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "%"');
             continue;
         }
@@ -286,45 +300,26 @@ function unary(){
     }
     if(expect('-')){
         let op = unary();
-        if(op.type == TY_INT){
-            op.val = - op.val;
-            return op;
-        }
+        if(op.type == TY_INT) return NodeUnary(ND_NEG, TY_INT, op);
         else error('invalid type of operator "-"');
     }
     if(expect('!')){
         let op = unary();
-        if(op.type == TY_BOOL){
-            op.val ^= 1;
-            return op;
-        }
+        if(op.type == TY_BOOL) return NodeUnary(ND_NOT, TY_BOOL, op);
         else error('invalid type of operator "-"');
     }
     return prim();
 }
 
 function prim(){
-    if(expect('(')){
-        let list = [];
-        while(true){
-            list.push(expr());
-            if(expect(',')) continue;
-            if(expect(')')) break;
-        }
-        return new NodeExpr(TY_LIST, list);
-    }
     if(expect('point')){
         expect('(');
         let x = num();
         expect(',');
         let y = num();
         expect(')');
-        if(x.type == TY_INT && y.type == TY_INT){
-            let point = new Point(x.val, y.val);
-            sketch.push(point);
-            return new NodeExpr(TY_POINT, point);
-        }
-        else error('invalid types of arguments');
+        if(x.type == TY_INT && y.type == TY_INT) return new NodeBinary(ND_POINT, TY_POINT, x, y);
+        error('invalid types of arguments');
     }
     if(expect('line')){
         expect('(');
@@ -332,26 +327,18 @@ function prim(){
         expect(',');
         let q = expr();
         expect(')')
-        if(p.type == TY_POINT && q.type == TY_POINT){
-            let line = new Line(p.val, q.val);
-            sketch.push(line);
-            return new NodeExpr(TY_LINE, line);
-        }
-        else error('invalid types of arguments');
+        if(p.type == TY_POINT && q.type == TY_POINT) return new NodeBinary(ND_LINE, TY_LINE, p, q);
+        error('invalid types of arguments');
     }
     if(expect('circle')){
         expect('(');
         let p = expr();
         expect(',');
         let r = expr();
-        if(r.type == TY_LINE) r = new NodeExpr(TY_INT, r.val.dist);
         expect(')');
-        if(p.type == TY_POINT && r.type == TY_INT){
-            let circle = new Circle(p.val, r.val);
-            sketch.push(circle);
-            return new NodeExpr(TY_CIRCLE, circle);
-        }
-        else error('invalid types of arguments');
+        if(p.type == TY_POINT && r.type == TY_INT) return new NodeBinary(ND_CIRCLE_POINT_RADIUS, TY_CIRCLE, p, r);
+        if(p.type == TY_POINT && r.type == TY_LINE) return new NodeBinary(ND_CIRCLE_POINT_LINE, TY_CIRCLE, p, r);
+        error('invalid types of arguments');
     }
     if(expect('and')){
         expect('(');
@@ -360,22 +347,10 @@ function prim(){
         let Y = expr();
         expect(')')
         
-        if(X.type == TY_LINE && Y.type == TY_LINE){
-            let point = intrsecLines(X.val, Y.val);
-            return new NodeExpr(TY_POINT, point);
-        }
-        if(X.type == TY_LINE && Y.type == TY_CIRCLE){
-            let [point1, point2] = intrsecLineAndCircle(X.val, Y.val);
-            return new NodeExpr(TY_LIST, [new NodeExpr(TY_POINT, point1), new NodeExpr(TY_POINT, point2)]);
-        }
-        if(X.type == TY_CIRCLE && Y.type == TY_LINE){
-            let [point1, point2] = intrsecCircleAndLine(X.val, Y.val);
-            return new NodeExpr(TY_LIST, [new NodeExpr(TY_POINT, point1), new NodeExpr(TY_POINT, point2)]);
-        }
-        if(X.type == TY_CIRCLE && Y.type == TY_CIRCLE){
-            let [point1, point2] = intrsecCircles(X.val, Y.val);
-            return new NodeExpr(TY_LIST, [new NodeExpr(TY_POINT, point1), new NodeExpr(TY_POINT, point2)]);
-        }
+        if(X.type == TY_LINE && Y.type == TY_LINE) return new NodeBinary(ND_INTRSEC_LINE_LINE, TY_POINT, X, Y);
+        if(X.type == TY_LINE && Y.type == TY_CIRCLE) return new NodeBinary(ND_INTRSEC_LINE_CIRCLE, TY_LIST, X, Y);
+        if(X.type == TY_CIRCLE && Y.type == TY_LINE) return new NodeBinary(ND_INTRSEC_CIRCLE_LINE, TY_LIST, X, Y);
+        if(X.type == TY_CIRCLE && Y.type == TY_CIRCLE) return new NodeBinary(ND_INTRSEC_CIRCLE_CIRCLE, TY_LIST, X, Y);
         error('invalid types of arguments');
     }
 
@@ -385,16 +360,16 @@ function prim(){
             name += expr().val;
             expect(']');
         }
-        let { type: type, val: val } = table.find(name);
-        return new NodeExpr(type, val);
+        let type = table.find(name);
+        return new NodeIdent(type, name);
     }
     return num();
 }
 
 function num(){
-    if(expect('-')) return new NodeExpr(TY_INT, -nextNum());
+    if(expect('-')) return new NodeNum(-nextNum());
     expect('+');
-    return new NodeExpr(TY_INT, nextNum());
+    return new NodeNum(nextNum());
 }
 
 export { parse };
