@@ -1,5 +1,9 @@
+const errorScreen = document.getElementById('error');
+
 function error(msg){
-    console.log(msg);
+    errorScreen.disabled = false;
+    errorScreen.value += msg + '\n';
+    errorScreen.disabled = true;
     throw new Error();
 }
 

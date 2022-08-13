@@ -1,10 +1,9 @@
 import { sketch, setCanvasScale, draw, animation } from './modules/canvas.js';
 import { interpreter } from './interpreter/main.js';
 
-let editor = document.getElementById('editor');
-let error = document.getElementById('error');
-let drawButton = document.getElementById('draw');
-let playButton = document.getElementById('play');
+const editor = document.getElementById('editor');
+const drawButton = document.getElementById('draw');
+const playButton = document.getElementById('play');
 
 editor.addEventListener(
     'change',
