@@ -10,72 +10,63 @@ body {
     overflow: hidden;
 
     font-family: 'Yu Gothic Light', sans-serif;
-    font-weight: lighter;
 }
 
 #codepane {
-    padding: 0;
     position: absolute;
     top: 0;
     bottom: 0;
     right: 0;
+    padding: 0;
     width: 30%;
 }
 
 #editor {
     width: 100%;
-    height: 70%;
-
+    height: 60%;
     resize: none;
+    background-color: transparent;
 
     font-size: 10pt;
     font-family: 'Consolas', 'Courier New', Courier, monospace;
-
-    top: 0;
-    left: 0;
 }
 
 #error {
     width: 100%;
     height: 30%;
-
     resize: none;
 
     font-size: 10pt;
     font-family: 'Consolas', 'Courier New', Courier, monospace;
-
-    top: 0;
-    left: 0;
-}
-
-#export {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
 }
 
 #run {
-    width: 100%;
-
-    position: absolute;
-    left: 20px;
-    bottom: 31%;
+    width: max-content;
+    height: 10%;
+    margin: 0 auto;
 }
 
 button {
     box-sizing: border-box;
     width: 100px;
 
-    border-radius: 2rem;
+    border-radius: 10px;
     border-width: thin;
-    background-color: transparent;
+    background-color: rgb(230, 230, 230);
 
     font-family: 'Yu Gothic Light', sans-serif;
-    font-size: 1.5rem;
-    font-weight: lighter;
+    font-size: 21px;
+    font-weight: bold;
 
-    margin-top: 5px;
+    margin: 5px 8px;
 }
+
 button:hover {
     transform: scale(1.1);
+}
+
+#export {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
 }
