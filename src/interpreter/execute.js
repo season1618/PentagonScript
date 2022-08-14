@@ -1,10 +1,11 @@
 import { sketch } from '../modules/canvas.js';
 import { Point, Line, Circle } from '../modules/construction.js';
 import { intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles } from '../modules/construction.js';
-import { ND_IF, ND_FOR, ND_RETURN, ND_EXPR, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN } from './modules/node.js';
+import { ND_BLOCK, ND_IF, ND_FOR, ND_RETURN, ND_EXPR, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL } from './modules/node.js';
 import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 
 let map;
+let stack;
 
 class SymbolMap {
     constructor(){
@@ -18,8 +19,23 @@ class SymbolMap {
     }
 }
 
+class Stack {
+    constructor(){
+        this.top = null;
+    }
+    push(val){
+        this.top = { next: this.top, val: val };
+    }
+    pop(){
+        let val = this.top.val;
+        this.top = this.top.next;
+        return val;
+    }
+}
+
 function execute(nodeList){
     map = new SymbolMap();
+    stack = new Stack();
 
     for(let i = 0; i < nodeList.length; i++){
         let node = nodeList[i];
@@ -27,8 +43,23 @@ function execute(nodeList){
     }
 }
 
+function execFunc(func){
+    let params = func.params;
+    for(let i = 0; i < params.length; i++){
+        map.add(params[i].name, stack.pop());
+    }
+    execStmt(func.proc);
+}
+
 function execStmt(node){
     switch(node.kind){
+        case ND_BLOCK:{
+            let proc = node.proc;
+            for(let i = 0; i < proc.length; i++){
+                execStmt(proc[i]);
+            }
+            return;
+        }
         case ND_ASSIGN:{
             let ident = node.lhs;
             let init = execExpr(node.rhs);
@@ -49,6 +80,9 @@ function execStmt(node){
             }
             return;
         }
+        case ND_RETURN:
+            stack.push(execExpr(node.ret));
+            return;
     }
     execExpr(node);
 }
@@ -61,6 +95,15 @@ function execExpr(node){
             return !execExpr(node.operand);
         case ND_IDENT:
             return map.find(node.name);
+        case ND_FUNC_CALL:{
+            let func = node.func;
+            let args = node.args;
+            for(let i = args.length - 1; i >= 0; i--){
+                stack.push(execExpr(args[i]));
+            }
+            execFunc(func);
+            return stack.pop();
+        }
         case ND_NUM:
             return node.val;
     }

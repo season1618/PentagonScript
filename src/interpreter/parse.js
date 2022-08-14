@@ -1,11 +1,45 @@
 import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
-import { ND_IF, ND_FOR, ND_RETURN, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN } from './modules/node.js';
+import { ND_BLOCK, ND_IF, ND_FOR, ND_RETURN, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL, ND_FUNC_DEF } from './modules/node.js';
 import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 import { error } from './modules/error.js';
 
 class Node {
     constructor(kind){
         this.kind = kind;
+    }
+}
+
+class Func {
+    constructor(params, type, proc){
+        this.params = params;
+        this.type = type;
+        this.proc = proc;
+    }
+}
+
+class NodeFuncCall extends Node {
+    constructor(type, func, args){
+        super(ND_FUNC_CALL);
+        this.type = type;
+        this.func = func;
+        this.args = args;
+    }
+}
+
+class NodeBlock extends Node {
+    constructor(){
+        super(ND_BLOCK);
+        this.proc = [];
+    }
+    push(node){
+        this.proc.push(node);
+    }
+}
+
+class NodeReturn extends Node {
+    constructor(ret){
+        super(ND_RETURN);
+        this.ret = ret;
     }
 }
 
@@ -93,7 +127,7 @@ function nextIdent(){
     if(cur.kind == TK_IDENT){
         let token = cur;
         cur = cur.next;
-        return token;
+        return token.str;
     }
     error(cur.str + ' is not identifier');
 }
@@ -135,23 +169,25 @@ function parse(tokenHead){
     nodeList = [];
     table = new SymbolTable();
     while(cur.kind != TK_EOF){
-        nodeList.push(stmt());
+        let proc = stmt();
+        if(proc != null) nodeList.push(proc);
     }
     return nodeList;
 }
 
 function stmt(){
     if(expect('{')){
-        while(!expect('}')) stmt();
-        return;
+        let node = new NodeBlock();
+        while(!expect('}')) node.push(stmt());
+        return node;
     }
     if(expect('var')){
         if(expect('(')){
             let idents;
-            let name = nextIdent().str;
+            let name = nextIdent();
             if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
             if(expect(',')){
-                let name2 = nextIdent().str;
+                let name2 = nextIdent();
                 if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
                 table.add(name, TY_POINT);
                 table.add(name2, TY_POINT);
@@ -168,7 +204,7 @@ function stmt(){
             if(inits.type == TY_LIST) return new NodeBinary(ND_ASSIGN, null, idents, inits);
             error('the types of both sides does not correspond');
         }else{
-            let name = nextIdent().str;
+            let name = nextIdent();
             let lType = null;
             if(expect(':')) lType = nextType();
             expect('=');
@@ -183,6 +219,31 @@ function stmt(){
             }
             error('the types of both sides does not correspond');
         }
+    }
+    if(expect('func')){
+        let name = nextIdent();
+        let params = [];
+        expect('(');
+        while(!expect(')')){
+            let paramName = nextIdent();
+            expect(':');
+            let paramType = nextType();
+            params.push(new NodeIdent(paramType, paramName));
+            table.add(paramName, paramType);
+            if(expect(',')) continue;
+            if(expect(')')) break;
+        }
+        expect(':');
+        let type = nextType();
+        let proc = stmt();
+        let func = new Func(params, type, proc);
+        table.add(name, func);console.log(func);
+        return null;
+    }
+    if(expect('return')){
+        let ret = expr();
+        expect(';');
+        return new NodeReturn(ret);
     }
     let node = expr();
     expect(';');
@@ -355,7 +416,24 @@ function prim(){
     }
 
     if(cur.kind == TK_IDENT){
-        let name = nextIdent().str;
+        let name = nextIdent();
+        if(expect('(')){
+            let func = table.find(name);
+            let type = func.type;
+            let params = func.params;
+            let args = [];
+            while(!expect(')')){
+                args.push(expr());
+                if(expect(',')) continue;
+                if(expect(')')) break;
+            }
+
+            if(params.length != args.length) error('the number of arguments does not correspond');
+            for(let i = 0; i < params.length; i++){
+                if(params[i].type != args[i].type) error(i + ' th argument type is invalid');
+            }
+            return new NodeFuncCall(type, func, args);
+        }
         while(expect('[')){
             name += expr().val;
             expect(']');

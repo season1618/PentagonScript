@@ -27,6 +27,9 @@ export const ND_ASSIGN = 25;
 export const ND_NEG = 26;
 export const ND_NOT = 27;
 export const ND_PAIR = 28;
+export const ND_BLOCK = 29;
+export const ND_FUNC_CALL = 30;
+export const ND_FUNC_DEF = 31;
 
 export const TY_BOOL = 0
 export const TY_INT = 1;
