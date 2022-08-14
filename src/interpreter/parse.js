@@ -201,17 +201,13 @@ function stmt(){
             let idents;
             let name = nextIdent();
             if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
-            if(expect(',')){
-                let name2 = nextIdent();
-                if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
-                table.add(name, TY_POINT);
-                table.add(name2, TY_POINT);
-                idents = new NodePair(new NodeIdent(TY_POINT, name), new NodeIdent(TY_POINT, name2));
-            }else{
-                table.add(name, TY_POINT);
-                idents = new NodeIdent(TY_POINT, name);
-            }
+            expect(',');
+            let name2 = nextIdent();
+            if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
+            table.add(name, TY_POINT);
+            table.add(name2, TY_POINT);
             expect(')');
+            idents = [name, name2];
             expect('=');
             let inits = expr();
             expect(';');
@@ -229,7 +225,7 @@ function stmt(){
             let rType = init.type == TY_LIST ? TY_POINT : init.type;
             if(lType == null || lType == rType){
                 table.add(name, rType);
-                let ident = new NodeIdent(rType, name);
+                let ident = [name];
                 return new NodeBinary(ND_ASSIGN, null, ident, init);
             }
             error('the types of both sides does not correspond');

@@ -1,7 +1,13 @@
 import { sketch } from '../modules/canvas.js';
 import { Point, Line, Circle } from '../modules/construction.js';
 import { intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles } from '../modules/construction.js';
-import { ND_BLOCK, ND_IF, ND_FOR, ND_RETURN, ND_EXPR, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL } from './modules/node.js';
+import {
+    ND_BLOCK, ND_IF, ND_FOR, ND_RETURN,
+    ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE,
+    ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT,
+    ND_PAIR, ND_IDENT, ND_NUM,
+    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
+} from './modules/node.js';
 import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 
 let map;
@@ -63,20 +69,14 @@ function execStmt(node){
         case ND_ASSIGN:{
             let ident = node.lhs;
             let init = execExpr(node.rhs);
-            if(ident.kind == ND_IDENT){
-                if(node.rhs.type == TY_LIST){
-                    init[0].lhs.update(init[0].x, init[0].y);
-                    init[0].rhs.update(init[0].x, init[0].y);
-                    map.add(ident.name, init[0]);
-                }else{
-                    map.add(ident.name, init);
-                }
-            }else{
-                for(let i = 0; i < 2; i++){
+            if(node.rhs.type == TY_LIST){
+                for(let i = 0; i < ident.length; i++){
                     init[i].lhs.update(init[i].x, init[i].y);
                     init[i].rhs.update(init[i].x, init[i].y);
-                    map.add(ident[i].name, init[i]);
+                    map.add(ident[i], init[i]);
                 }
+            }else{
+                map.add(ident[0], init);
             }
             return;
         }
