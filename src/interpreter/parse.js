@@ -1,5 +1,11 @@
 import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
-import { ND_BLOCK, ND_IF, ND_FOR, ND_RETURN, ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE, ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT, ND_PAIR, ND_IDENT, ND_NUM, ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL, ND_FUNC_DEF } from './modules/node.js';
+import {
+    ND_BLOCK, ND_IF, ND_FOR, ND_RETURN,
+    ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE,
+    ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT,
+    ND_PAIR, ND_IDENT, ND_NUM,
+    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
+} from './modules/node.js';
 import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 import { error } from './modules/error.js';
 
@@ -92,6 +98,7 @@ class NodeNum extends Node {
 class SymbolTable {
     constructor(){
         this.top = null;
+        this.count = 0;
     }
     add(name, type){
         for(let item = this.top; item != null; item = item.next){
@@ -100,6 +107,12 @@ class SymbolTable {
             }
         }
         this.top = { next: this.top, name: name, type: type };
+        this.count++;
+    }
+    pop(cnt){
+        for(; this.count > cnt; this.count--){
+            this.top = this.top.next;
+        }
     }
     find(name){
         for(let item = this.top; item != null; item = item.next){
@@ -178,7 +191,9 @@ function parse(tokenHead){
 function stmt(){
     if(expect('{')){
         let node = new NodeBlock();
+        let cnt = table.count;
         while(!expect('}')) node.push(stmt());
+        table.pop(cnt);
         return node;
     }
     if(expect('var')){
@@ -223,6 +238,7 @@ function stmt(){
     if(expect('func')){
         let name = nextIdent();
         let params = [];
+        let cnt = table.count;
         expect('(');
         while(!expect(')')){
             let paramName = nextIdent();
@@ -236,8 +252,9 @@ function stmt(){
         expect(':');
         let type = nextType();
         let proc = stmt();
+        table.pop(cnt);
         let func = new Func(params, type, proc);
-        table.add(name, func);console.log(func);
+        table.add(name, func);
         return null;
     }
     if(expect('return')){
