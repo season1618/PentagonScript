@@ -72,13 +72,6 @@ class NodeUnary extends Node {
     }
 }
 
-class NodePair extends Node {
-    constructor(first, second){
-        super(ND_PAIR);
-        this[0] = first;
-        this[1] = second;
-    }
-}
 class NodeIdent extends Node {
     constructor(type, name){
         super(ND_IDENT);

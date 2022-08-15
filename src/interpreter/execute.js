@@ -10,18 +10,29 @@ import {
 } from './modules/node.js';
 import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
 
-let map;
+let table;
 let stack;
 
-class SymbolMap {
+class SymbolTable {
     constructor(){
+        this.top = null;
+        this.num = 0;
     }
-    add(name, val){
-        this[name] = val;
+    push(name, val){
+        this.top = { next: this.top, name: name, val: val };
+        this.num++;
+    }
+    pop(num){
+        for(; this.num > num; this.num--){
+            this.top = this.top.next;
+        }
     }
     find(name){
-        if(name in this) return this[name];
-        else error(name + ' is undefined');
+        for(let item = this.top; item != null; item = item.next){
+            if(item.name == name){
+                return item.val;
+            }
+        }
     }
 }
 
@@ -40,7 +51,7 @@ class Stack {
 }
 
 function execute(nodeList){
-    map = new SymbolMap();
+    table = new SymbolTable();
     stack = new Stack();
 
     for(let i = 0; i < nodeList.length; i++){
@@ -51,19 +62,23 @@ function execute(nodeList){
 
 function execFunc(func){
     let params = func.params;
+    let num = table.num;
     for(let i = 0; i < params.length; i++){
-        map.add(params[i].name, stack.pop());
+        table.push(params[i].name, stack.pop());
     }
     execStmt(func.proc);
+    table.pop(num);
 }
 
 function execStmt(node){
     switch(node.kind){
         case ND_BLOCK:{
             let proc = node.proc;
+            let num = table.num;
             for(let i = 0; i < proc.length; i++){
                 execStmt(proc[i]);
             }
+            table.pop(num);
             return;
         }
         case ND_ASSIGN:{
@@ -73,10 +88,10 @@ function execStmt(node){
                 for(let i = 0; i < ident.length; i++){
                     init[i].lhs.update(init[i].x, init[i].y);
                     init[i].rhs.update(init[i].x, init[i].y);
-                    map.add(ident[i], init[i]);
+                    table.push(ident[i], init[i]);
                 }
             }else{
-                map.add(ident[0], init);
+                table.push(ident[0], init);
             }
             return;
         }
@@ -94,7 +109,7 @@ function execExpr(node){
         case ND_NOT:
             return !execExpr(node.operand);
         case ND_IDENT:
-            return map.find(node.name);
+            return table.find(node.name);
         case ND_FUNC_CALL:{
             let func = node.func;
             let args = node.args;
