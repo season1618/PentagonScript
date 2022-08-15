@@ -4,7 +4,7 @@ import { error } from './modules/error.js';
 
 const types = ['Int', 'Point', 'Line', 'Circle'];
 const keywords = ['var', 'func', 'if', 'else', 'for', 'in', 'return', 'point', 'line', 'circle', 'and'];
-const puncts = ['(', ')', '{', '}', '[', ']', ':', ';', ',', '=', '+', '-', '*', '/', '%']
+const puncts = ['||', '&&', '==', '!=', '<=', '>=', '(', ')', '{', '}', '[', ']', '<', '>', ':', ';', ',', '=', '+', '-', '*', '/', '%'];
 
 function isSpace(c){
     return c.match(/\s/);
@@ -99,10 +99,10 @@ function tokenize(src){
     
     function readPunct(){
         for(let punct of puncts){
-            if(src[index] == punct){
+            if(src.substr(index, punct.length) == punct){
                 cur.push(new TokenStr(TK_RESERVED, punct));
                 cur = cur.next;
-                index++;
+                index += punct.length;
                 return true;
             }
         }

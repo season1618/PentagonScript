@@ -23,6 +23,13 @@ class Func {
     }
 }
 
+class Var {
+    constructor(type, val = null){
+        this.type = type;
+        this.val = val;
+    }
+}
+
 class NodeFuncCall extends Node {
     constructor(type, func, args){
         super(ND_FUNC_CALL);
@@ -42,16 +49,29 @@ class NodeBlock extends Node {
     }
 }
 
+class NodeIf extends Node {
+    constructor(cond, procIf, procElse){
+        super(ND_IF);
+        this.cond = cond;
+        this.procIf = procIf;
+        this.procElse = procElse;
+    }
+}
+
+class NodeFor extends Node {
+    constructor(){
+        super(ND_FOR);
+        this.proc = [];
+    }
+    push(proc){
+        this.proc.push(proc);
+    }
+}
+
 class NodeReturn extends Node {
     constructor(ret){
         super(ND_RETURN);
         this.ret = ret;
-    }
-}
-
-class NodeIf extends Node {
-    constructor(kind, cond, cont1, cont2){
-        super(kind);
     }
 }
 
@@ -73,10 +93,11 @@ class NodeUnary extends Node {
 }
 
 class NodeIdent extends Node {
-    constructor(type, name){
+    constructor(type, name, val = null){
         super(ND_IDENT);
         this.type = type;
         this.name = name;
+        this.val = val;
     }
 }
 
@@ -93,13 +114,13 @@ class SymbolTable {
         this.top = null;
         this.count = 0;
     }
-    add(name, type){
+    push(name, cont){
         for(let item = this.top; item != null; item = item.next){
             if(item.name == name){
                 error(name + ' is already defined');
             }
         }
-        this.top = { next: this.top, name: name, type: type };
+        this.top = { next: this.top, name: name, cont: cont };
         this.count++;
     }
     pop(cnt){
@@ -110,16 +131,29 @@ class SymbolTable {
     find(name){
         for(let item = this.top; item != null; item = item.next){
             if(item.name == name){
-                return item.type;
+                return item.cont;
             }
         }
         error(name + ' is undefined');
     }
 }
 
+class Stack {
+    constructor(){
+        this.top = null;
+    }
+    push(name, val){
+        this.top = { next: this.top, name: name, val: val };
+    }
+    pop(){
+        this.top = this.top.next;
+    }
+}
+
 let cur;
 let nodeList;
 let table;
+let stack;
 
 function expect(str){
     if(cur.kind != TK_NUM && cur.str == str){
@@ -174,6 +208,7 @@ function parse(tokenHead){
     cur = tokenHead;
     nodeList = [];
     table = new SymbolTable();
+    stack = new Stack();
     while(cur.kind != TK_EOF){
         let proc = stmt();
         if(proc != null) nodeList.push(proc);
@@ -197,8 +232,8 @@ function stmt(){
             expect(',');
             let name2 = nextIdent();
             if(expect(':'))if(nextType() != TY_POINT) error('the type must be "Point"');
-            table.add(name, TY_POINT);
-            table.add(name2, TY_POINT);
+            table.push(name, new Var(TY_POINT));
+            table.push(name2, new Var(TY_POINT));
             expect(')');
             idents = [name, name2];
             expect('=');
@@ -209,6 +244,10 @@ function stmt(){
             error('the types of both sides does not correspond');
         }else{
             let name = nextIdent();
+            if(expect('[')){
+                name += evalConst(expr());
+                expect(']');
+            }
             let lType = null;
             if(expect(':')) lType = nextType();
             expect('=');
@@ -217,7 +256,7 @@ function stmt(){
 
             let rType = init.type == TY_LIST ? TY_POINT : init.type;
             if(lType == null || lType == rType){
-                table.add(name, rType);
+                table.push(name, new Var(rType));
                 let ident = [name];
                 return new NodeBinary(ND_ASSIGN, null, ident, init);
             }
@@ -234,7 +273,7 @@ function stmt(){
             expect(':');
             let paramType = nextType();
             params.push(new NodeIdent(paramType, paramName));
-            table.add(paramName, paramType);
+            table.push(paramName, new Var(paramType));
             if(expect(',')) continue;
             if(expect(')')) break;
         }
@@ -243,8 +282,38 @@ function stmt(){
         let proc = stmt();
         table.pop(cnt);
         let func = new Func(params, type, proc);
-        table.add(name, func);
+        table.push(name, func);
         return null;
+    }
+    if(expect('if')){console.log('helo');
+        expect('(');
+        let cond = expr();
+        expect(')');
+        let procIf = stmt();
+        let procElse = null;
+        if(expect('else')) procElse = stmt();
+        return new NodeIf(cond, procIf, procElse);
+    }
+    if(expect('for')){
+        expect('(');
+        let name = nextIdent();
+        expect('in');
+        expect('[');
+        let min = nextNum();
+        expect(',');
+        let max = nextNum();
+        expect(']');
+        expect(')');
+        expect('{');
+        let node = new NodeFor();
+        let head = cur;
+        for(let i = min; i < max; i++){
+            cur = head;
+            stack.push(name, i);
+            while(!expect('}')) node.push(stmt());
+            stack.pop();
+        }
+        return node;
     }
     if(expect('return')){
         let ret = expr();
@@ -264,7 +333,7 @@ function or(){
     let lhs = and();
     while(expect('||')){
         let rhs = and();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_OR, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_OR, TY_BOOL, lhs, rhs);
         else error('invalid types of logical operator "||"');
     }
     return lhs;
@@ -274,7 +343,7 @@ function and(){
     let lhs = relate();
     while(expect('&&')){
         let rhs = relate();
-        if(lhs.type == TY_BOOL && rhs.type == TY_BOOL) lhs = NodeBinary(ND_AND, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_BOOL && rhs.type == TY_BOOL) lhs = new NodeBinary(ND_AND, TY_BOOL, lhs, rhs);
         else error('invalid types of logical operator "&&"');
     }
     return lhs;
@@ -284,32 +353,32 @@ function relate(){
     let lhs = add();
     if(expect('==')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_EQ, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_EQ, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "=="');
     }
     if(expect('!=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_NE, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_NE, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "!="');
     }
     if(expect('<')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LT, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_LT, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "<"');
     }
     if(expect('<=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LE, TY_BOOL, lhs, rhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_LE, TY_BOOL, lhs, rhs);
         else error('invalid types of relational operator "<="');
     }
     if(expect('>')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LT, TY_BOOL, rhs, lhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_LT, TY_BOOL, rhs, lhs);
         else error('invalid types of relational operator ">"');
     }
     if(expect('>=')){
         let rhs = add();
-        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_LE, TY_BOOL, rhs, lhs);
+        if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_LE, TY_BOOL, rhs, lhs);
         else error('invalid types of relational operator ">="');
     }
     return lhs;
@@ -320,13 +389,13 @@ function add(){
     while(true){
         if(expect('+')){
             let rhs = mul();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_ADD, TY_INT, lhs, rhs);
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_ADD, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "+"');
             continue;
         }
         if(expect('-')){
             let rhs = mul();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_SUB, TY_INT, lhs, rhs);
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_SUB, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "-"');
             continue;
         }
@@ -339,19 +408,19 @@ function mul(){
     while(true){
         if(expect('*')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_MUL, TY_INT, lhs, rhs);
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_MUL, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "*"');
             continue;
         }
         if(expect('/')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_DIV, TY_INT, lhs, rhs);
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_DIV, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "/"');
             continue;
         }
         if(expect('%')){
             let rhs = unary();
-            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = NodeBinary(ND_MOD, TY_INT, lhs, rhs);
+            if(lhs.type == TY_INT && rhs.type == TY_INT) lhs = new NodeBinary(ND_MOD, TY_INT, lhs, rhs);
             else error('invalid type of binary operator "%"');
             continue;
         }
@@ -367,12 +436,12 @@ function unary(){
     }
     if(expect('-')){
         let op = unary();
-        if(op.type == TY_INT) return NodeUnary(ND_NEG, TY_INT, op);
+        if(op.type == TY_INT) return new NodeUnary(ND_NEG, TY_INT, op);
         else error('invalid type of operator "-"');
     }
     if(expect('!')){
         let op = unary();
-        if(op.type == TY_BOOL) return NodeUnary(ND_NOT, TY_BOOL, op);
+        if(op.type == TY_BOOL) return new NodeUnary(ND_NOT, TY_BOOL, op);
         else error('invalid type of operator "-"');
     }
     return prim();
@@ -440,11 +509,12 @@ function prim(){
             }
             return new NodeFuncCall(type, func, args);
         }
-        while(expect('[')){
-            name += expr().val;
+        if(expect('[')){
+            name += evalConst(expr());
             expect(']');
         }
-        let type = table.find(name);
+        if(stack.top != null && stack.top.name == name) return new NodeIdent(TY_INT, name, stack.top.val);
+        let type = table.find(name).type;
         return new NodeIdent(type, name);
     }
     return num();
@@ -454,6 +524,32 @@ function num(){
     if(expect('-')) return new NodeNum(-nextNum());
     expect('+');
     return new NodeNum(nextNum());
+}
+
+function evalConst(node){
+    switch(node.kind){
+        case ND_NEG:
+            return - evalConst(node.operand);
+        case ND_IDENT:
+            return node.val;
+        case ND_NUM:
+            return node.val;
+    }
+    let lhs = evalConst(node.lhs);
+    let rhs = evalConst(node.rhs);
+    switch(node.kind){
+        case ND_ADD:
+            return lhs + rhs;
+        case ND_SUB:
+            return lhs - rhs;
+        case ND_MUL:
+            return lhs * rhs;
+        case ND_DIV:
+            return lhs / rhs;
+        case ND_MOD:
+            return lhs % rhs;
+    }
+    error('it is not immediate constant');
 }
 
 export { parse };

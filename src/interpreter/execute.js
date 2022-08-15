@@ -8,7 +8,7 @@ import {
     ND_PAIR, ND_IDENT, ND_NUM,
     ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
 } from './modules/node.js';
-import { TY_BOOL, TY_INT, TY_POINT, TY_LINE, TY_CIRCLE, TY_LIST } from './modules/node.js';
+import { TY_LIST } from './modules/node.js';
 
 let table;
 let stack;
@@ -92,6 +92,22 @@ function execStmt(node){
                 }
             }else{
                 table.push(ident[0], init);
+            }
+            return;
+        }
+        case ND_IF:
+            if(execExpr(node.cond)){
+                execStmt(node.procIf);
+                return;
+            }
+            if(node.procElse != null){
+                execStmt(node.procElse);
+            }
+            return;
+        case ND_FOR:{
+            let proc = node.proc;
+            for(let i = 0; i < proc.length; i++){
+                execStmt(proc[i]);
             }
             return;
         }
