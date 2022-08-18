@@ -2,8 +2,7 @@ import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.
 import { Token, TokenStr, TokenNum } from './modules/token.js';
 import { error } from './modules/error.js';
 
-const types = ['Int', 'Point', 'Line', 'Circle'];
-const keywords = ['var', 'func', 'if', 'else', 'for', 'in', 'return', 'point', 'line', 'circle', 'and'];
+const keywords = ['var', 'func', 'if', 'else', 'for', 'in', 'return', 'Int', 'Point', 'Line', 'Circle', 'and'];
 const puncts = ['||', '&&', '==', '!=', '<=', '>=', '(', ')', '{', '}', '[', ']', '<', '>', ':', ';', ',', '=', '+', '-', '*', '/', '%'];
 
 function isSpace(c){
@@ -37,7 +36,6 @@ function tokenize(src){
             index++;
             continue;
         }
-        if(readType()) continue;
         if(readKeyword()) continue;
         if(readPunct()) continue;
         if(isDigit(src[index])){
@@ -71,18 +69,6 @@ function tokenize(src){
             index++;
         }
         return new TokenStr(TK_IDENT, str);
-    }
-    
-    function readType(){
-        for(let type of types){
-            if(src.substr(index, type.length) == type && !isAlnum(src[index + type.length])){
-                cur.push(new TokenStr(TK_TYPE, type));
-                cur = cur.next;
-                index += type.length;
-                return true;
-            }
-        }
-        return false;
     }
     
     function readKeyword(){

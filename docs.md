@@ -22,23 +22,22 @@ unary = "+" unary
       | "-" unary
       | "!" unary
       | prim
-prim = "point" "(" num "," num ")"
-     | "line" "(" expr "," expr ")"
-     | "circle" "(" expr "," expr ")"
+prim = "Point" "(" num "," num ")"
+     | "Line" "(" expr "," expr ")"
+     | "Circle" "(" expr "," expr ")"
      | "and" "(" expr "," expr ")"
      | ident ("[" expr "]")*
      | ident "(" (expr ("," expr)*)? ")"
      | num
 ```
 
-## Type Inference
-```
-point: (Int, Int) -> Point
-line: (Point, Point) -> Line
-circle: (Point, Int) -> Circle
-        (Point, Line) -> Circle
-and: (Line, Line) -> Point
-     (Line, Circle) -> (Point, Point)
-     (Circle, Line) -> (Point, Point)
-     (Circle, Circle) -> (Point, Point)
-```
+## Semantics
+
+- `Point(x: Int, y: Int): Point`: render a point in the Cartesian coodinates (x, y) and return it.
+- `Line(a: Point, b: Point): Line`: render a line through two points and return it.
+- `Circle(o: Point, r: Int): Circle`: render a circle with center o and radius r and return it.
+- `Circle(o: Point, d: Line): Circle`: render a circle which center is o, radius is the length of d and return it.
+- `and(l1: Line, l2: Line): Point`: return a point at which two lines intersect.
+- `and(l: Line, c: Circle): (Point, Point)`: return a tuple of two points at which the line and the circle intersect.
+- `and(c: Circle, l: Line): (Point, Point)`: return a tuple of two points at which the circle and the line intersect.
+- `and(c1: Circle, c2: Circle): (Point, Point)`: return a tuple of two points at which two circles intersect.

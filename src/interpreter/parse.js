@@ -1,4 +1,4 @@
-import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
+import { TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
 import {
     ND_BLOCK, ND_IF, ND_FOR, ND_RETURN,
     ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE,
@@ -75,26 +75,25 @@ function nextIdent(){
 }
 
 function nextType(){
-    if(cur.kind == TK_TYPE){
-        let type;
-        switch(cur.str){
-            case 'Int':
-                type = TY_INT;
-                break;
-            case 'Point':
-                type = TY_POINT;
-                break;
-            case 'Line':
-                type = TY_LINE;
-                break;
-            case 'Circle':
-                type = TY_CIRCLE;
-                break;
-        }
-        cur = cur.next;
-        return type;
+    let type;
+    switch(cur.str){
+        case 'Int':
+            type = TY_INT;
+            break;
+        case 'Point':
+            type = TY_POINT;
+            break;
+        case 'Line':
+            type = TY_LINE;
+            break;
+        case 'Circle':
+            type = TY_CIRCLE;
+            break;
+        default:
+            error(cur.str + ' is not type');
     }
-    error(cur.str + ' is not type');
+    cur = cur.next;
+    return type;
 }
 
 function nextNum(){
@@ -350,7 +349,7 @@ function unary(){
 }
 
 function prim(){
-    if(expect('point')){
+    if(expect('Point')){
         expect('(');
         let x = num();
         expect(',');
@@ -359,7 +358,7 @@ function prim(){
         if(x.type == TY_INT && y.type == TY_INT) return new NodeBinary(ND_POINT, TY_POINT, x, y);
         error('invalid types of arguments');
     }
-    if(expect('line')){
+    if(expect('Line')){
         expect('(');
         let p = expr();
         expect(',');
@@ -368,7 +367,7 @@ function prim(){
         if(p.type == TY_POINT && q.type == TY_POINT) return new NodeBinary(ND_LINE, TY_LINE, p, q);
         error('invalid types of arguments');
     }
-    if(expect('circle')){
+    if(expect('Circle')){
         expect('(');
         let p = expr();
         expect(',');
