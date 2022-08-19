@@ -1,8 +1,8 @@
-var A = point(-100, 0);
-var B = point(100, 0);
-var AB = line(A, B);
-var C1 = circle(A, AB);
-var C2 = circle(B, AB);
+var A = Point(-100, 0);
+var B = Point(100, 0);
+var AB = Line(A, B);
+var C1 = Circle(A, AB);
+var C2 = Circle(B, AB);
 var C = and(C2, C1);
-line(A, C);
-line(B, C);
+Line(A, C);
+Line(B, C);
