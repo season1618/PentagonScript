@@ -182,7 +182,7 @@ function execExpr(node){
             return circle;
         }
         case ND_CIRCLE_POINT_LINE:{
-            let circle = new Circle(lhs, rhs.dist);
+            let circle = new Circle(lhs, rhs.length);
             sketch.push(circle);
             return circle;
         }
