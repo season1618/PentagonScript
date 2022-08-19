@@ -22,7 +22,8 @@ unary = "+" unary
       | "-" unary
       | "!" unary
       | prim
-prim = "Point" "(" num "," num ")"
+prim = "(" expr ")"
+     | "Point" "(" num "," num ")"
      | "Line" "(" expr "," expr ")"
      | "Circle" "(" expr "," expr ")"
      | "and" "(" expr "," expr ")"

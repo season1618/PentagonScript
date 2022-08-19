@@ -1,4 +1,4 @@
-import { sketch } from '../modules/canvas.js';
+import { canvas, sketch } from '../modules/canvas.js';
 import { Point, Line, Circle } from '../modules/construction.js';
 import { intrsecLines, intrsecLineAndCircle, intrsecCircleAndLine, intrsecCircles } from '../modules/construction.js';
 import {
@@ -167,7 +167,7 @@ function execExpr(node){
         case ND_MOD:
             return lhs % rhs;
         case ND_POINT:{
-            let point = new Point(lhs, rhs);
+            let point = new Point(canvas.width/2 + lhs, canvas.height/2 - rhs);
             sketch.push(point);
             return point;
         }

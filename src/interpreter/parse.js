@@ -348,6 +348,11 @@ function unary(){
 }
 
 function prim(){
+    if(expect('(')){
+        let node = expr();
+        expect(')');
+        return node;
+    }
     if(expect('Point')){
         expect('(');
         let x = num();
