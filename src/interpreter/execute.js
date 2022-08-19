@@ -6,7 +6,7 @@ import {
     ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE,
     ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT,
     ND_PAIR, ND_IDENT, ND_NUM,
-    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
+    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_LEN, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
 } from './modules/node.js';
 import { TY_LIST } from './modules/node.js';
 
@@ -124,6 +124,8 @@ function execExpr(node){
             return - execExpr(node.operand);
         case ND_NOT:
             return !execExpr(node.operand);
+        case ND_LEN:
+            return execExpr(node.operand).length;
         case ND_IDENT:
             return table.find(node.name);
         case ND_FUNC_CALL:{

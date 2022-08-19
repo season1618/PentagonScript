@@ -1,8 +1,8 @@
-import { TK_TYPE, TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
+import { TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
 import { Token, TokenStr, TokenNum } from './modules/token.js';
 import { error } from './modules/error.js';
 
-const keywords = ['var', 'func', 'if', 'else', 'for', 'in', 'return', 'Int', 'Point', 'Line', 'Circle', 'and'];
+const keywords = ['var', 'func', 'if', 'else', 'for', 'in', 'return', 'Int', 'Point', 'Line', 'Circle', 'len', 'and'];
 const puncts = ['||', '&&', '==', '!=', '<=', '>=', '(', ')', '{', '}', '[', ']', '<', '>', ':', ';', ',', '=', '+', '-', '*', '/', '%'];
 
 function isSpace(c){

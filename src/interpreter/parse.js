@@ -1,10 +1,9 @@
 import { TK_IDENT, TK_NUM, TK_RESERVED, TK_EOF } from './modules/token.js';
 import {
-    ND_BLOCK, ND_IF, ND_FOR, ND_RETURN,
     ND_OR, ND_AND, ND_EQ, ND_NE, ND_LT, ND_LE,
     ND_ADD, ND_SUB, ND_MUL, ND_DIV, ND_MOD, ND_NEG, ND_NOT,
     ND_PAIR, ND_IDENT, ND_NUM,
-    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
+    ND_POINT, ND_LINE, ND_CIRCLE_POINT_LINE, ND_CIRCLE_POINT_RADIUS, ND_LEN, ND_INTRSEC_LINE_LINE, ND_INTRSEC_LINE_CIRCLE, ND_INTRSEC_CIRCLE_LINE, ND_INTRSEC_CIRCLE_CIRCLE, ND_ASSIGN, ND_FUNC_CALL
 } from './modules/node.js';
 import { NodeBlock, NodeIf, NodeFor, NodeReturn, NodeBinary, NodeUnary, NodeIdent, NodeFuncCall, NodeNum } from './modules/node.js';
 import { Var, Func } from './modules/node.js';
@@ -376,6 +375,14 @@ function prim(){
         if(p.type == TY_POINT && r.type == TY_INT) return new NodeBinary(ND_CIRCLE_POINT_RADIUS, TY_CIRCLE, p, r);
         if(p.type == TY_POINT && r.type == TY_LINE) return new NodeBinary(ND_CIRCLE_POINT_LINE, TY_CIRCLE, p, r);
         error('invalid types of arguments');
+    }
+    if(expect('len')){
+        expect('(');
+        let line = expr();
+        expect(')');
+
+        if(line.type == TY_LINE) return new NodeUnary(ND_LEN, TY_INT, line);
+        error('invalid type of argument');
     }
     if(expect('and')){
         expect('(');

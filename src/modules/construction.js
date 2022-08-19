@@ -35,7 +35,7 @@ class Line {
         this.y1 = p1.y;
         this.x2 = p2.x;
         this.y2 = p2.y;
-        this.dist = Math.sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2);
+        this.length = Math.sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2);
     }
     update(X, Y){
         let x3 = 2 * this.x1 - this.x2;

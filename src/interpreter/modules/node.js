@@ -28,6 +28,7 @@ export const ND_NOT = 27;
 export const ND_PAIR = 28;
 export const ND_BLOCK = 29;
 export const ND_FUNC_CALL = 30;
+export const ND_LEN = 31;
 
 class Node {
     constructor(kind){
