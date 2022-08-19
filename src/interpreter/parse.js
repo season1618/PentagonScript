@@ -166,6 +166,9 @@ function stmt(){
     if(expect('func')){
         let name = nextIdent();
         let params = [];
+        let func = new Func(null, null, null);
+        table.push(name, func);
+
         let cnt = table.count;
         expect('(');
         while(!expect(')')){
@@ -178,14 +181,13 @@ function stmt(){
             if(expect(')')) break;
         }
         expect(':');
-        let type = nextType();
-        let proc = stmt();
+        func.params = params;
+        func.type = nextType();
+        func.proc = stmt();
         table.pop(cnt);
-        let func = new Func(params, type, proc);
-        table.push(name, func);
         return null;
     }
-    if(expect('if')){console.log('helo');
+    if(expect('if')){
         expect('(');
         let cond = expr();
         expect(')');

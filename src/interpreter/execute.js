@@ -76,7 +76,7 @@ function execStmt(node){
             let proc = node.proc;
             let num = table.num;
             for(let i = 0; i < proc.length; i++){
-                execStmt(proc[i]);
+                if(execStmt(proc[i])) return true;
             }
             table.pop(num);
             return;
@@ -93,29 +93,29 @@ function execStmt(node){
             }else{
                 table.push(ident[0], init);
             }
-            return;
+            return false;
         }
         case ND_IF:
             if(execExpr(node.cond)){
-                execStmt(node.procIf);
-                return;
+                return execStmt(node.procIf);
             }
             if(node.procElse != null){
-                execStmt(node.procElse);
+                return execStmt(node.procElse);
             }
-            return;
+            return false;
         case ND_FOR:{
             let proc = node.proc;
             for(let i = 0; i < proc.length; i++){
-                execStmt(proc[i]);
+                if(execStmt(proc[i])) return true;
             }
-            return;
+            return false;
         }
         case ND_RETURN:
             stack.push(execExpr(node.ret));
-            return;
+            return true;
     }
     execExpr(node);
+    return false;
 }
 
 function execExpr(node){
