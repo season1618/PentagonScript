@@ -1,0 +1,16 @@
+func fibonacci(n: Int): Int {
+    if(n == 0) return 0;
+    if(n == 1) return 1;
+    return fibonacci(n-1) + fibonacci(n-2);
+}
+
+var p = Point(0, 0);
+var a[0] = 0;
+var a[1] = 1;
+for(i in [2, 10]){
+    var a[i] = a[i-1] + a[i-2];
+}
+for(i in [0, 10]){
+    Circle(p, a[i] * 10);
+}
+Circle(p, fibonacci(10) * 10);

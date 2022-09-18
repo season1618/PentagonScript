@@ -1,23 +1,25 @@
-var A = point(-100, 0);
-var B = point(100, 0);
-var AB = line(A, B);
-var c1 = circle(A, 150);
-var c2 = circle(B, 150);
-var (p3, p4) = and(c1, c2);
-var y = line(p3, p4);
-var M = and(AB, y);
-var c3 = circle(M, AB);
-var p6 = and(y, c3);
-var c4 = circle(p6, line(A, M));
-var p7 = and(line(A, p6), c4);
-var c5 = circle(A, line(A, p7));
-var C = and(y, c5);
-var c6 = circle(A, AB);
-var c7 = circle(B, AB);
-var c8 = circle(C, AB);
+func bisector(a: Point, b: Point): Line {
+    var d = len(Line(a, b));
+    var c1 = Circle(a, d*3/4);
+    var c2 = Circle(b, d*3/4);
+    var (x, y) = and(c1, c2);
+    return Line(x, y);
+}
+
+var A = Point(-100, 0);
+var B = Point(100, 0);
+var AB = Line(A, B);
+var bs = bisector(A, B);
+var M = and(AB, bs);
+var H = and(bs, Circle(M, AB));
+var I = and(Line(A, H), Circle(H, Line(A, M)));
+var C = and(bs, Circle(A, Line(A, I)));
+var c6 = Circle(A, AB);
+var c7 = Circle(B, AB);
+var c8 = Circle(C, AB);
 var D = and(c8, c6);
 var E = and(c7, c8);
-line(A, D);
-line(C, D);
-line(B, E);
-line(C, E);
+Line(A, D);
+Line(C, D);
+Line(B, E);
+Line(C, E);

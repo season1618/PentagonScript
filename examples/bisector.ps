@@ -1,0 +1,11 @@
+func bisector(a: Point, b: Point): Line {
+    var d = len(Line(a, b));
+    var c1 = Circle(a, d*3/4);
+    var c2 = Circle(b, d*3/4);
+    var (x, y) = and(c1, c2);
+    return Line(x, y);
+}
+
+var A = Point(-100, 0);
+var B = Point(100, 0);
+var c = bisector(A, B);
