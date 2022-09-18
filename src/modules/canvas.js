@@ -89,24 +89,24 @@ document.getElementById('png').addEventListener(
     }
 );
 
-document.getElementById('webm').addEventListener(
-    'click',
-    async function(){          
-        stream = canvas.captureStream(24);
-        var recorder = new MediaRecorder(stream);
+// document.getElementById('webm').addEventListener(
+//     'click',
+//     async function(){          
+//         stream = canvas.captureStream(24);
+//         var recorder = new MediaRecorder(stream);
         
-        recorder.ondataavailable = function(e) {
-            let blob = new Blob([e.data], {type: e.data.type});
-            let anchor = document.createElement('a');
-            anchor.href = URL.createObjectURL(blob);
-            anchor.download = 'canvas.webm';
-            anchor.click();
-        }
+//         recorder.ondataavailable = function(e) {
+//             let blob = new Blob([e.data], {type: e.data.type});
+//             let anchor = document.createElement('a');
+//             anchor.href = URL.createObjectURL(blob);
+//             anchor.download = 'canvas.webm';
+//             anchor.click();
+//         }
 
-        recorder.start();
-        await animation(ctx);
-        recorder.stop();
-    }
-);
+//         recorder.start();
+//         await animation(ctx);
+//         recorder.stop();
+//     }
+// );
 
 export {canvas, ctx, sketch, setCanvasScale, draw, animation};
