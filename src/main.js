@@ -5,6 +5,8 @@ const editor = document.getElementById('editor');
 const drawButton = document.getElementById('draw');
 const playButton = document.getElementById('play');
 
+interpreter(editor.value);
+
 editor.addEventListener(
     'change',
     function(){
