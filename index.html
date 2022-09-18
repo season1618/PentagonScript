@@ -11,7 +11,33 @@
     <canvas id="canvas"></canvas>
     
     <div id="codepane">
-        <textarea id="editor"></textarea>
+        <textarea id="editor">
+func bisector(a: Point, b: Point): Line {
+    var d = len(Line(a, b));
+    var c1 = Circle(a, d*3/4);
+    var c2 = Circle(b, d*3/4);
+    var (x, y) = and(c1, c2);
+    return Line(x, y);
+}
+
+var A = Point(-100, 0);
+var B = Point(100, 0);
+var AB = Line(A, B);
+var bs = bisector(A, B);
+var M = and(AB, bs);
+var H = and(bs, Circle(M, AB));
+var I = and(Line(A, H), Circle(H, Line(A, M)));
+var C = and(bs, Circle(A, Line(A, I)));
+var c6 = Circle(A, AB);
+var c7 = Circle(B, AB);
+var c8 = Circle(C, AB);
+var D = and(c8, c6);
+var E = and(c7, c8);
+Line(A, D);
+Line(C, D);
+Line(B, E);
+Line(C, E);
+        </textarea>
         <div id="run">
             <button id="draw">draw</button>
             <button id="play">play</button>
@@ -21,7 +47,7 @@
     
     <div id="export">
         <div><button id="png" type="button">.png</button></div>
-        <div><button id="webm" type="button">.webm</button></div>
+        <!-- <div><button id="webm" type="button">.webm</button></div> -->
     </div>
 
     <script type="module" src="./src/main.js"></script>
