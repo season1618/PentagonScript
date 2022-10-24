@@ -12,6 +12,10 @@ body {
     font-family: 'Yu Gothic Light', sans-serif;
 }
 
+canvas {
+    background-color: rgb(230, 230, 230);
+}
+
 #codepane {
     position: absolute;
     top: 0;
@@ -25,7 +29,9 @@ body {
     width: 100%;
     height: 60%;
     resize: none;
-    background-color: transparent;
+    background-color: white;
+
+    border-style: none;
 
     font-size: 10pt;
     font-family: 'Consolas', 'Courier New', Courier, monospace;
@@ -51,8 +57,9 @@ button {
     width: 100px;
 
     border-radius: 10px;
+    border-style: none;
     border-width: thin;
-    background-color: rgb(230, 230, 230);
+    background-color: rgb(100, 200, 100);
 
     font-family: 'Yu Gothic Light', sans-serif;
     font-size: 21px;
@@ -62,7 +69,7 @@ button {
 }
 
 button:hover {
-    transform: scale(1.1);
+    background-color: rgb(110, 210, 110);
 }
 
 #export {
